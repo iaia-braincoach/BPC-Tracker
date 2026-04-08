@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BPC Tracker">
+<meta name="theme-color" content="#5F3685">
+<title>BPC · Performance Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --purple:      #5F3685;
+  --purple-dark: #4A2869;
+  --purple-dim:  rgba(95,54,133,0.10);
+  --purple-faint:rgba(95,54,133,0.06);
+  --gold:        #E8B84B;
+  --gold-light:  rgba(232,184,75,0.14);
+  --bg:          #F8F7FC;
+  --bg2:         #FFFFFF;
+  --bg3:         #F0EDF8;
+  --black:       #1E1A2E;
+  --muted:       #6B6880;
+  --border:      rgba(95,54,133,0.12);
+  --border-med:  rgba(95,54,133,0.22);
+  --red:         #E24B4A;
+  --red-light:   rgba(226,75,74,0.09);
+  --green:       #2D9B6F;
+  --green-light: rgba(45,155,111,0.10);
+  --font: 'Plus Jakarta Sans', sans-serif;
+}
+html, body { height:100%; font-family:var(--font); color:var(--black); background:var(--bg); font-size:14px; line-height:1.5; overflow-x:hidden; }
+
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; flex-direction:column; }
+.screen.active { display:flex; }
+
+/* ── LOADING OVERLAY ── */
+#loading-overlay { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; gap:14px; }
+#loading-overlay.hidden { display:none; }
+.loader-ring { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loader-txt { font-size:13px; color:var(--muted); }
+
+/* ── LOGIN ── */
+#s-login { align-items:center; justify-content:center; padding:24px; background:var(--bg); min-height:100vh; }
+.login-wrap { width:100%; max-width:400px; }
+.login-brand { text-align:center; margin-bottom:28px; }
+.login-logo-ring { width:64px; height:64px; border-radius:50%; background:var(--purple-dim); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
+.login-logo-ring img { width:44px; height:44px; object-fit:contain; }
+.login-brand-name { font-size:20px; font-weight:700; color:var(--purple); letter-spacing:-0.02em; margin-bottom:4px; }
+.login-brand-sub { font-size:13px; color:var(--muted); }
+.login-card { background:var(--bg2); border-radius:16px; border:1.5px solid var(--border); padding:28px; box-shadow:0 4px 20px rgba(95,54,133,0.06); }
+.role-switch { display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:22px; }
+.rsw-btn { padding:9px; border:none; background:none; border-radius:8px; cursor:pointer; font-size:13px; font-family:var(--font); color:var(--muted); font-weight:500; transition:all .15s; }
+.rsw-btn.active { background:var(--bg2); color:var(--purple); font-weight:700; box-shadow:0 1px 4px rgba(95,54,133,0.13); }
+.lfield { margin-bottom:16px; }
+.lfield label { display:block; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:7px; }
+.lfield input { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:14px; font-family:var(--font); background:var(--bg); color:var(--black); outline:none; transition:border-color .15s; }
+.lfield input:focus { border-color:var(--purple); background:var(--bg2); }
+.login-btn { width:100%; padding:13px; background:var(--purple); color:#fff; border:none; border-radius:9px; font-size:14px; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .15s; letter-spacing:0.01em; }
+.login-btn:hover { background:var(--purple-dark); }
+.login-btn:disabled { opacity:0.6; cursor:default; }
+.login-err { color:var(--red); font-size:12px; margin-top:10px; display:none; }
+.login-hint { font-size:11px; color:var(--muted); margin-top:16px; text-align:center; line-height:1.7; background:var(--bg); border-radius:8px; padding:10px 14px; }
+
+/* ── TOPBAR ── */
+.topbar { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:var(--bg2); border-bottom:1.5px solid var(--border); flex-shrink:0; position:sticky; top:0; z-index:10; }
+.topbar-brand { display:flex; align-items:center; gap:9px; }
+.topbar-brand img { height:30px; width:auto; }
+.topbar-brand-name { font-size:14px; font-weight:700; color:var(--purple); letter-spacing:-0.01em; }
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.t-avatar { width:32px; height:32px; border-radius:50%; background:var(--purple-dim); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--purple); flex-shrink:0; }
+.t-name { font-size:13px; color:var(--muted); display:none; }
+@media(min-width:460px){ .t-name { display:block; } }
+.btn-out { padding:6px 14px; border:1.5px solid var(--border); border-radius:6px; background:none; cursor:pointer; font-size:12px; font-family:var(--font); color:var(--muted); transition:all .15s; }
+.btn-out:hover { background:var(--bg); color:var(--black); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { display:flex; background:var(--bg2); border-top:1.5px solid var(--border); flex-shrink:0; position:sticky; bottom:0; z-index:10; }
+.bnav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:10px 4px 14px; border:none; background:none; cursor:pointer; font-size:10px; font-weight:600; color:var(--muted); font-family:var(--font); transition:color .15s; }
+.bnav-btn svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .15s; }
+.bnav-btn.active { color:var(--purple); }
+
+/* ── PAGE ── */
+.page-body { flex:1; overflow-y:auto; background:var(--bg); }
+.page-inner { max-width:600px; margin:0 auto; padding:20px 16px 100px; }
+.tabview { display:none; }
+.tabview.active { display:block; }
+
+/* ── FORM SECTIONS ── */
+.form-section { background:var(--bg2); border-radius:14px; border:1.5px solid var(--border); padding:20px; margin-bottom:12px; }
+.fsec-title { font-size:15px; font-weight:700; color:var(--black); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+.fsec-icon { font-size:20px; }
+.fsec-desc { font-size:12px; color:var(--muted); line-height:1.65; margin-bottom:18px; }
+.fsec-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin:16px 0 9px; }
+.fsec-label:first-of-type { margin-top:0; }
+.fsec-sublabel { font-weight:400; font-style:italic; text-transform:none; letter-spacing:0; color:var(--muted); }
+
+/* ── CHIPS ── */
+.chips { display:flex; gap:7px; flex-wrap:wrap; }
+.chip { padding:7px 14px; border:1.5px solid var(--border); border-radius:20px; font-size:12px; cursor:pointer; background:var(--bg); color:var(--muted); transition:all .12s; font-family:var(--font); font-weight:500; user-select:none; -webkit-tap-highlight-color:transparent; }
+.chip:hover { border-color:var(--purple); color:var(--purple); }
+.chip.on { background:var(--purple-dim); border-color:rgba(95,54,133,0.35); color:var(--purple-dark); font-weight:600; }
+
+/* ── SCALE ── */
+.scale-row { display:flex; gap:5px; }
+.sbtn { flex:1; height:38px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); cursor:pointer; font-size:13px; font-weight:600; color:var(--muted); font-family:var(--font); transition:all .12s; -webkit-tap-highlight-color:transparent; }
+.sbtn:hover { border-color:var(--purple); color:var(--purple); }
+.sbtn.on { background:var(--purple); border-color:var(--purple); color:#fff; }
+.scale-ends { display:flex; justify-content:space-between; margin-top:5px; }
+.scale-end { font-size:10px; color:var(--muted); }
+
+/* ── INPUTS ── */
+.finput { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:var(--font); background:var(--bg); color:var(--black); outline:none; transition:border-color .15s; }
+.finput:focus { border-color:var(--purple); background:var(--bg2); }
+textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
+
+/* ── BINARY ── */
+.binary-row { display:flex; gap:8px; }
+.bin-btn { flex:1; padding:11px 6px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); cursor:pointer; font-size:13px; font-weight:500; font-family:var(--font); color:var(--muted); transition:all .12s; text-align:center; user-select:none; -webkit-tap-highlight-color:transparent; }
+.bin-btn:hover { border-color:var(--purple); color:var(--purple); }
+.bin-btn.on { background:var(--purple); border-color:var(--purple); color:#fff; font-weight:700; }
+
+/* ── SUBMIT ── */
+.submit-btn { width:100%; padding:14px; background:var(--purple); color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:700; font-family:var(--font); cursor:pointer; margin-top:6px; transition:background .15s, opacity .15s; letter-spacing:0.01em; }
+.submit-btn:hover { background:var(--purple-dark); }
+.submit-btn:disabled { opacity:0.55; cursor:default; }
+.already-msg { background:var(--gold-light); border:1.5px solid rgba(232,184,75,0.45); border-radius:12px; padding:14px 18px; color:#6B4500; font-size:13px; text-align:center; margin-bottom:14px; display:none; line-height:1.6; }
+.ok-msg { background:var(--green-light); border:1.5px solid rgba(45,155,111,0.3); border-radius:12px; padding:14px 18px; color:#0D5C3A; font-size:13px; text-align:center; margin-top:14px; display:none; line-height:1.6; }
+
+/* ── STATS ── */
+.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.stat-card { background:var(--bg2); border-radius:12px; border:1.5px solid var(--border); padding:14px 10px; text-align:center; }
+.stat-lbl { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:6px; }
+.stat-val { font-size:28px; font-weight:700; color:var(--purple); letter-spacing:-0.03em; line-height:1; }
+.stat-val.gold { color:var(--gold); }
+.stat-sub { font-size:10px; color:var(--muted); margin-top:4px; }
+
+/* ── CHART ── */
+.chart-card { background:var(--bg2); border-radius:14px; border:1.5px solid var(--border); padding:16px 16px 12px; margin-bottom:14px; }
+.chart-title { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:14px; }
+
+/* ── HISTORY ── */
+.hist-item { background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:8px; cursor:pointer; transition:border-color .15s; }
+.hist-item:hover { border-color:rgba(95,54,133,0.28); }
+.hist-item.open { border-color:rgba(95,54,133,0.3); }
+.hist-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.hist-date { font-size:12px; font-weight:700; color:var(--purple); }
+.hist-chevron { font-size:11px; color:var(--muted); transition:transform .2s; }
+.hist-item.open .hist-chevron { transform:rotate(180deg); }
+.hist-scores { display:flex; gap:12px; flex-wrap:wrap; }
+.hs { font-size:12px; color:var(--muted); }
+.hs b { color:var(--black); font-weight:700; }
+.hist-detail { margin-top:12px; padding-top:12px; border-top:1.5px solid var(--border); display:none; }
+.hist-item.open .hist-detail { display:block; }
+.hist-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.hd-block { background:var(--bg); border-radius:8px; padding:10px 12px; }
+.hd-label { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; }
+.hd-val { font-size:13px; color:var(--black); font-weight:600; }
+.chips-display { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 4px; }
+.chip-sm { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; background:var(--purple-dim); color:var(--purple-dark); }
+.hist-note { margin-top:8px; font-size:12px; color:var(--muted); line-height:1.65; }
+.hist-note b { color:var(--black); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:2px; }
+
+/* ── COACH ── */
+.coach-stats-row { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
+@media(min-width:480px){ .coach-stats-row { grid-template-columns:repeat(4,1fr); } }
+.filters-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+.fsel { padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg2); color:var(--black); font-family:var(--font); outline:none; cursor:pointer; }
+.fsel:focus { border-color:var(--purple); }
+.fsearch { padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg2); color:var(--black); font-family:var(--font); outline:none; flex:1; min-width:140px; }
+.fsearch:focus { border-color:var(--purple); }
+
+/* ── ATHLETE CARDS ── */
+.ath-card { background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; margin-bottom:8px; overflow:hidden; transition:border-color .15s; cursor:pointer; }
+.ath-card:hover { border-color:rgba(95,54,133,0.28); }
+.ath-card.alert-card { border-color:rgba(226,75,74,0.35); background:rgba(226,75,74,0.02); }
+.ath-row-main { display:flex; align-items:center; gap:12px; padding:14px 16px; }
+.ath-av { width:40px; height:40px; border-radius:50%; background:var(--purple-dim); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--purple); flex-shrink:0; }
+.ath-info { flex:1; min-width:0; }
+.ath-name { font-size:14px; font-weight:700; color:var(--black); margin-bottom:2px; }
+.ath-sport { font-size:12px; color:var(--muted); }
+.ath-scores { display:flex; gap:7px; align-items:center; flex-shrink:0; }
+.sc { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; font-size:11px; font-weight:700; }
+.sc-hi { background:var(--green-light); color:var(--green); }
+.sc-md { background:var(--gold-light); color:#7A5A00; }
+.sc-lo { background:var(--red-light); color:var(--red); }
+.sc-none { background:var(--bg3); color:var(--muted); border:1.5px solid var(--border); font-size:10px; }
+.ath-detail { display:none; padding:0 16px 16px; border-top:1.5px solid var(--border); }
+.ath-card.open .ath-detail { display:block; padding-top:14px; }
+
+/* ── MANAGE ── */
+.manage-card { background:var(--bg2); border:1.5px solid var(--border); border-radius:14px; padding:20px; margin-bottom:12px; }
+.manage-card h3 { font-size:15px; font-weight:700; color:var(--black); margin-bottom:16px; }
+.ath-manage-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1.5px solid var(--border); }
+.ath-manage-row:last-of-type { border-bottom:none; }
+.ath-manage-info { flex:1; }
+.ath-manage-name { font-size:13px; font-weight:600; color:var(--black); }
+.ath-manage-code { font-size:11px; color:var(--muted); font-family:monospace; background:var(--bg); padding:2px 7px; border-radius:4px; margin-top:3px; display:inline-block; }
+.btn-del { padding:5px 12px; border:1.5px solid rgba(226,75,74,0.3); border-radius:6px; background:none; cursor:pointer; font-size:11px; font-family:var(--font); color:var(--red); font-weight:600; transition:all .15s; }
+.btn-del:hover { background:var(--red-light); }
+.add-form { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; padding-top:14px; border-top:1.5px solid var(--border); }
+.add-form input { padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:var(--font); background:var(--bg); color:var(--black); outline:none; }
+.add-form input:focus { border-color:var(--purple); background:var(--bg2); }
+.add-form-btn { grid-column:1/-1; padding:11px; background:var(--purple); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .15s; }
+.add-form-btn:hover { background:var(--purple-dark); }
+.add-form-btn:disabled { opacity:0.6; cursor:default; }
+.link-box { background:var(--bg); border:1.5px solid var(--border); border-radius:8px; padding:12px 16px; display:flex; align-items:center; gap:10px; margin-top:10px; }
+.link-text { flex:1; font-size:12px; color:var(--muted); font-family:monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.copy-btn { padding:6px 14px; border:1.5px solid var(--border); border-radius:6px; background:var(--bg2); cursor:pointer; font-size:12px; font-family:var(--font); color:var(--muted); font-weight:600; white-space:nowrap; transition:all .15s; }
+.copy-btn:hover { background:var(--purple-dim); color:var(--purple); border-color:rgba(95,54,133,0.3); }
+
+/* ── ALERTS ── */
+.alert-item { background:var(--bg2); border:1.5px solid rgba(226,75,74,0.28); border-radius:12px; padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.alert-dot { width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0; }
+.a-info { flex:1; }
+.a-name { font-size:14px; font-weight:700; color:var(--black); margin-bottom:2px; }
+.a-reason { font-size:12px; color:var(--muted); }
+
+/* ── MISC ── */
+.sec-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.sec-hdr h2 { font-size:17px; font-weight:700; color:var(--black); letter-spacing:-0.02em; }
+.tag { font-size:11px; font-weight:700; padding:4px 10px; border-radius:10px; }
+.tag-red { background:var(--red-light); color:var(--red); }
+.empty-state { text-align:center; padding:40px 20px; color:var(--muted); font-size:13px; line-height:1.7; }
+
+/* ── DATE NAV ── */
+.date-nav { display:flex; align-items:center; justify-content:space-between; background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:12px 16px; margin-bottom:12px; }
+.date-nav-btn { width:34px; height:34px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); cursor:pointer; font-size:16px; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .15s; font-family:var(--font); }
+.date-nav-btn:hover:not(:disabled) { border-color:var(--purple); color:var(--purple); }
+.date-nav-btn:disabled { opacity:0.3; cursor:default; }
+.date-nav-center { text-align:center; }
+.date-nav-day { font-size:15px; font-weight:700; color:var(--black); letter-spacing:-0.01em; }
+.date-nav-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* ── COACH CHART ── */
+.coach-chart-card { background:var(--bg2); border-radius:14px; border:1.5px solid var(--border); padding:16px; margin-bottom:14px; }
+.coach-chart-title { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:4px; }
+.coach-chart-sub { font-size:11px; color:var(--muted); margin-bottom:12px; }
+.mini-chart-wrap { margin-top:12px; padding-top:12px; border-top:1.5px solid var(--border); }
+.mini-chart-title { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; }
+
+@media(max-width:380px){
+  .scale-row { gap:3px; }
+  .sbtn { font-size:11px; height:34px; }
+  .binary-row { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOADING OVERLAY ── -->
+<div id="loading-overlay">
+  <div class="loader-ring"></div>
+  <div class="loader-txt">Loading…</div>
+</div>
+
+<!-- ════════════════════════════ LOGIN ════════════════════════════ -->
+<div class="screen" id="s-login">
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="login-logo-ring">
+        <img src="assets/logo-brain.png" alt="BPC" onerror="this.parentElement.innerHTML='🧠'">
+      </div>
+      <div class="login-brand-name">Brain Performance Coaching</div>
+      <div class="login-brand-sub">Daily performance tracker</div>
+    </div>
+    <div class="login-card">
+      <div class="role-switch">
+        <button class="rsw-btn active" onclick="setRole('athlete',this)">I'm an athlete</button>
+        <button class="rsw-btn" onclick="setRole('coach',this)">I'm the coach</button>
+      </div>
+      <div id="ath-login">
+        <div class="lfield"><label>Your name</label><input id="li-name" type="text" placeholder="First and last name" autocomplete="name" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="lfield"><label>Access code</label><input id="li-code" type="password" placeholder="Code from your coach" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      </div>
+      <div id="coach-login" style="display:none">
+        <div class="lfield"><label>Coach password</label><input id="li-pw" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      </div>
+      <button class="login-btn" id="login-btn" onclick="doLogin()">Sign in →</button>
+      <p class="login-err" id="login-err"></p>
+      <p class="login-hint">Athletes: enter your name and access code.<br>Coach: select Coach and enter your password.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ ATHLETE ════════════════════════════ -->
+<div class="screen" id="s-athlete">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/logo-brain.png" alt="BPC" onerror="this.style.display='none'">
+      <span class="topbar-brand-name">BPC Tracker</span>
+    </div>
+    <div class="topbar-right">
+      <div class="t-avatar" id="ath-av"></div>
+      <span class="t-name" id="ath-name-top"></span>
+      <button class="btn-out" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-inner">
+
+      <!-- TODAY'S CHECK-IN -->
+      <div class="tabview active" id="at-checkin">
+        <div class="date-nav">
+          <button class="date-nav-btn" id="btn-prev-day" onclick="changeDay(-1)">←</button>
+          <div class="date-nav-center">
+            <div class="date-nav-day" id="date-nav-label">—</div>
+            <div class="date-nav-sub" id="date-nav-full">—</div>
+          </div>
+          <button class="date-nav-btn" id="btn-next-day" onclick="changeDay(1)" disabled>→</button>
+        </div>
+        <div class="already-msg" id="already-msg">✅ Check-in complete for this day — well done.</div>
+        <div id="form-wrap">
+
+          <!-- 1. MENTAL TRAINING -->
+          <div class="form-section">
+            <div class="fsec-title"><span class="fsec-icon">🧠</span> Mental training today</div>
+            <div class="fsec-desc">Which brain training tools did you apply today? These are the skills we're building together. Tracking them helps you build the habit — and helps your coach see what you're putting into practice.</div>
+            <div class="fsec-label">What did you practise?</div>
+            <div class="chips" id="mental-chips">
+              <div class="chip" onclick="toggleChip(this,'mental','Visualisation')">Visualisation</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Breathwork')">Breathwork</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Self-talk')">Self-talk</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Thought reframing')">Thought reframing</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Focus training')">Focus training</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Flow state')">Flow state</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Anchor')">Anchor</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Journaling')">Journaling</div>
+              <div class="chip" onclick="toggleChip(this,'mental','Meditation')">Meditation</div>
+              <div class="chip" onclick="toggleChip(this,'mental','None today')">None today</div>
+            </div>
+            <div class="fsec-label">For how long?</div>
+            <div class="chips" id="dur-chips">
+              <div class="chip" onclick="pickOne(this,'dur','&lt;10 min')">&lt;10 min</div>
+              <div class="chip" onclick="pickOne(this,'dur','10–20 min')">10–20 min</div>
+              <div class="chip" onclick="pickOne(this,'dur','20+ min')">20+ min</div>
+              <div class="chip" onclick="pickOne(this,'dur','N/A')">N/A</div>
+            </div>
+          </div>
+
+          <!-- 2. MENTAL SCORES -->
+          <div class="form-section">
+            <div class="fsec-title"><span class="fsec-icon">📊</span> Mental scores</div>
+            <div class="fsec-desc">Be honest — not optimistic. A 4 when you're struggling is more useful than a 7 that isn't true. These scores track how your mind is developing throughout the programme.</div>
+            <div class="fsec-label">Mental clarity <span class="fsec-sublabel">— How clear and focused does your mind feel today?</span></div>
+            <div class="scale-row" id="sc-clarity"></div>
+            <div class="scale-ends"><span class="scale-end">Foggy</span><span class="scale-end">Sharp</span></div>
+            <div class="fsec-label">Confidence <span class="fsec-sublabel">— How confident do you feel in yourself right now?</span></div>
+            <div class="scale-row" id="sc-confidence"></div>
+            <div class="scale-ends"><span class="scale-end">Very low</span><span class="scale-end">Peak</span></div>
+            <div class="fsec-label">Motivation <span class="fsec-sublabel">— How driven do you feel about your training and goals?</span></div>
+            <div class="scale-row" id="sc-motivation"></div>
+            <div class="scale-ends"><span class="scale-end">Drained</span><span class="scale-end">Fired up</span></div>
+          </div>
+
+          <!-- 3. PHYSICAL TRAINING -->
+          <div class="form-section">
+            <div class="fsec-title"><span class="fsec-icon">🏃</span> Physical training</div>
+            <div class="fsec-desc">Tracking your physical sessions alongside your mental work helps us understand how the two connect — you'll start to notice patterns over time.</div>
+            <div class="fsec-label">Did you train today?</div>
+            <div class="binary-row">
+              <div class="bin-btn" onclick="pickTrained('yes',this)">✅ Yes</div>
+              <div class="bin-btn" onclick="pickTrained('rest',this)">🛋️ Rest day</div>
+              <div class="bin-btn" onclick="pickTrained('comp',this)">🏆 Competition</div>
+            </div>
+            <div id="training-detail" style="display:none">
+              <div class="fsec-label">Type of training</div>
+              <div class="chips" id="train-chips">
+                <div class="chip" onclick="toggleChip(this,'train','Track / field')">Track / field</div>
+                <div class="chip" onclick="toggleChip(this,'train','Gym / weights')">Gym / weights</div>
+                <div class="chip" onclick="toggleChip(this,'train','Technical')">Technical</div>
+                <div class="chip" onclick="toggleChip(this,'train','Team session')">Team session</div>
+                <div class="chip" onclick="toggleChip(this,'train','Rehab')">Rehab</div>
+                <div class="chip" onclick="toggleChip(this,'train','Other')">Other</div>
+              </div>
+              <div class="fsec-label">Session intensity <span class="fsec-sublabel">— How hard did you push?</span></div>
+              <div class="scale-row" id="sc-intensity"></div>
+              <div class="scale-ends"><span class="scale-end">Easy</span><span class="scale-end">Maximum</span></div>
+              <div class="fsec-label">How did your body feel? <span class="fsec-sublabel">— Physical readiness during the session</span></div>
+              <div class="scale-row" id="sc-bodyfeel"></div>
+              <div class="scale-ends"><span class="scale-end">Heavy / sluggish</span><span class="scale-end">Strong / fluid</span></div>
+            </div>
+          </div>
+
+          <!-- 4. RECOVERY & SLEEP -->
+          <div class="form-section">
+            <div class="fsec-title"><span class="fsec-icon">😴</span> Recovery &amp; sleep</div>
+            <div class="fsec-desc">Sleep and recovery directly affect your mental performance. This data helps spot patterns — for example, whether low confidence tends to follow poor sleep.</div>
+            <div class="fsec-label">Hours of sleep last night</div>
+            <div class="chips" id="sleep-chips">
+              <div class="chip" onclick="pickOne(this,'sleep','≤5h')">≤5h</div>
+              <div class="chip" onclick="pickOne(this,'sleep','6h')">6h</div>
+              <div class="chip" onclick="pickOne(this,'sleep','7h')">7h</div>
+              <div class="chip" onclick="pickOne(this,'sleep','8h')">8h</div>
+              <div class="chip" onclick="pickOne(this,'sleep','9h+')">9h+</div>
+            </div>
+            <div class="fsec-label">Sleep quality <span class="fsec-sublabel">— How restful and restorative was it?</span></div>
+            <div class="scale-row" id="sc-sleep"></div>
+            <div class="scale-ends"><span class="scale-end">Very poor</span><span class="scale-end">Perfect</span></div>
+            <div class="fsec-label">Energy level today <span class="fsec-sublabel">— How much energy do you have right now?</span></div>
+            <div class="scale-row" id="sc-energy"></div>
+            <div class="scale-ends"><span class="scale-end">Exhausted</span><span class="scale-end">Full energy</span></div>
+            <div class="fsec-label">Physical soreness / fatigue</div>
+            <div class="chips" id="soreness-chips">
+              <div class="chip" onclick="pickOne(this,'soreness','None')">None</div>
+              <div class="chip" onclick="pickOne(this,'soreness','Mild')">Mild</div>
+              <div class="chip" onclick="pickOne(this,'soreness','Moderate')">Moderate</div>
+              <div class="chip" onclick="pickOne(this,'soreness','High')">High</div>
+            </div>
+          </div>
+
+          <!-- 5. DAILY REFLECTION -->
+          <div class="form-section">
+            <div class="fsec-title"><span class="fsec-icon">✍️</span> Daily reflection</div>
+            <div class="fsec-desc">Two quick lines — no essays needed. This builds self-awareness over time and gives your coach a direct window into your day.</div>
+            <div class="fsec-label">Biggest win today</div>
+            <input class="finput" type="text" id="f-win" placeholder="e.g. Stayed focused during a tough training set">
+            <div class="fsec-label">Main challenge today</div>
+            <input class="finput" type="text" id="f-challenge" placeholder="e.g. Negative thoughts crept in before training">
+            <div class="fsec-label">Note for your coach <span class="fsec-sublabel">(optional)</span></div>
+            <textarea class="finput" id="f-note" placeholder="Anything you'd like Iaia to know…"></textarea>
+          </div>
+
+          <button class="submit-btn" onclick="submitCheckin()" id="submit-btn">Submit today's check-in →</button>
+          <div class="ok-msg" id="ok-msg">✅ Check-in saved — your coach will see this. See you tomorrow.</div>
+        </div>
+      </div>
+
+      <!-- PROGRESS TAB -->
+      <div class="tabview" id="at-progress">
+        <div class="stats-row" id="ath-stats"></div>
+        <div class="chart-card">
+          <div class="chart-title">Mental scores — last 7 days</div>
+          <canvas id="trend-chart" height="130"></canvas>
+        </div>
+        <div class="sec-hdr" style="margin-top:20px">
+          <h2>Your history</h2>
+        </div>
+        <div id="ath-hist-list"></div>
+      </div>
+
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="bnav-btn active" onclick="showATab('checkin',this)">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Check-in
+    </button>
+    <button class="bnav-btn" onclick="showATab('progress',this)">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      My Progress
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ COACH ════════════════════════════ -->
+<div class="screen" id="s-coach">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/logo-brain.png" alt="BPC" onerror="this.style.display='none'">
+      <span class="topbar-brand-name">BPC Tracker</span>
+    </div>
+    <div class="topbar-right">
+      <div class="t-avatar" style="background:var(--gold-light);color:#7A5A00;font-size:10px;font-weight:800">IC</div>
+      <span class="t-name">Coach</span>
+      <button class="btn-out" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-inner">
+
+      <!-- OVERVIEW -->
+      <div class="tabview active" id="ct-overview">
+        <div class="coach-stats-row" id="coach-stats"></div>
+        <div class="coach-chart-card" id="overview-chart-wrap" style="display:none">
+          <div class="coach-chart-title">Squad average — last 7 days</div>
+          <div class="coach-chart-sub">Average mental scores across all athletes who checked in each day</div>
+          <canvas id="overview-chart" height="110"></canvas>
+        </div>
+        <div class="filters-row">
+          <input class="fsearch" type="text" id="cf-search" placeholder="Search athlete…" oninput="renderCoach()">
+          <select class="fsel" id="cf-sort" onchange="renderCoach()">
+            <option value="name">Sort: Name</option>
+            <option value="avg">Sort: Avg score</option>
+            <option value="last">Sort: Last logged</option>
+          </select>
+        </div>
+        <div id="coach-list"></div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="tabview" id="ct-alerts">
+        <div class="sec-hdr">
+          <h2>Athletes to check in on</h2>
+          <span class="tag tag-red" id="alert-count">0</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.65">Athletes who haven't logged for 4 or more consecutive days, or who scored below 5 in the last 48 hours.</p>
+        <div id="alerts-list"></div>
+      </div>
+
+      <!-- MANAGE -->
+      <div class="tabview" id="ct-manage">
+        <div class="manage-card">
+          <h3>Registered athletes</h3>
+          <div id="ath-list-ui"></div>
+          <div class="add-form">
+            <input type="text" id="new-name" placeholder="Full name">
+            <input type="text" id="new-sport" placeholder="Sport">
+            <input type="text" id="new-code" placeholder="Access code (e.g. BPC2026)" style="grid-column:1/-1">
+            <button class="add-form-btn" id="add-btn" onclick="addAthlete()">+ Add athlete</button>
+          </div>
+        </div>
+        <div class="manage-card">
+          <h3>Share with athletes</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.65">Send athletes this link. They sign in with their name and the access code you've assigned them.</p>
+          <div class="link-box">
+            <span class="link-text" id="share-link">—</span>
+            <button class="copy-btn" onclick="copyLink()">Copy</button>
+          </div>
+          <div style="margin-top:14px;background:var(--bg);border-radius:10px;padding:14px;font-size:12px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--black);display:block;margin-bottom:4px">📱 How to save as an app on their phone</strong>
+            <strong>iPhone:</strong> Open link in Safari → tap the Share button → select "Add to Home Screen"<br>
+            <strong>Android:</strong> Open in Chrome → tap the three dots → "Add to Home screen"<br>
+            It will appear as an app icon — no App Store needed.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="bnav-btn active" onclick="showCTab('overview',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </button>
+    <button class="bnav-btn" onclick="showCTab('alerts',this)">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      Alerts
+    </button>
+    <button class="bnav-btn" onclick="showCTab('manage',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Athletes
+    </button>
+  </div>
+</div>
+
+<!-- ── FIREBASE + CHART.JS ── -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// ── FIREBASE CONFIG — paste your values from Firebase Console here ──
+// ══════════════════════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDsBQKKBZ_Qk_WwPVSsLnyPgQQPFOs5KFk",
+  authDomain:        "bpc-tracker-348c9.firebaseapp.com",
+  projectId:         "bpc-tracker-348c9",
+  storageBucket:     "bpc-tracker-348c9.firebasestorage.app",
+  messagingSenderId: "432815413236",
+  appId:             "1:432815413236:web:1dd5754955a5bb874b0ba1"
+};
+
+// Your email — used for coach login
+const COACH_EMAIL    = "mariarosariacolellacoach@gmail.com";
+// Default access code when adding new athletes
+const DEFAULT_CODE   = "BPC2026";
+
+// ── FIREBASE INIT ─────────────────────────────────────────────────────
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let currentUser     = null;
+let currentRole     = 'athlete';
+let scaleVals       = {};
+let selectedChips   = { mental:[], train:[] };
+let picks           = {};
+let trendChart      = null;
+let overviewChart   = null;
+const coachMiniCharts = {};
+let currentCheckInDate = todayStr();
+let athletesCache   = [];   // [{id, name, sport, code}]
+let entriesCache    = {};   // {athleteId: [{...entry}]}
+let unsubAthletes   = null; // Firestore realtime listener handle
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function todayStr() {
+  return new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function daysAgo(iso) {
+  if (!iso) return 999;
+  const then = new Date(iso + 'T12:00:00');
+  const now  = new Date(); now.setHours(0,0,0,0);
+  return Math.round((now - then) / 86400000);
+}
+function avg(arr) {
+  const f = arr.filter(v => v && v > 0);
+  return f.length ? Math.round(f.reduce((a,b) => a+b, 0) / f.length * 10) / 10 : 0;
+}
+function scClass(v) {
+  if (!v || v === 0) return 'sc-none';
+  return v >= 7 ? 'sc-hi' : v >= 5 ? 'sc-md' : 'sc-lo';
+}
+function initials(name) {
+  return name.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+function calcStreak(entries) {
+  if (!entries.length) return 0;
+  let streak = 0;
+  const base = new Date(); base.setHours(0,0,0,0);
+  for (let i = 0; i < entries.length; i++) {
+    const ed  = new Date(entries[i].date + 'T12:00:00'); ed.setHours(0,0,0,0);
+    const exp = new Date(base); exp.setDate(base.getDate() - i);
+    if (ed.getTime() === exp.getTime()) streak++;
+    else break;
+  }
+  return streak;
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.add('hidden');
+}
+function showLoading() {
+  document.getElementById('loading-overlay').classList.remove('hidden');
+}
+
+// ── FIRESTORE DATA LAYER ──────────────────────────────────────────────
+function getAthletes() { return athletesCache; }
+function getEntries(athleteId) { return entriesCache[athleteId] || []; }
+
+async function fetchAthletes() {
+  const snap = await db.collection('athletes').get();
+  athletesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return athletesCache;
+}
+
+async function fetchEntries(athleteId) {
+  const snap = await db.collection('checkins').doc(athleteId)
+    .collection('entries').orderBy('ts', 'desc').get();
+  entriesCache[athleteId] = snap.docs.map(d => d.data());
+  return entriesCache[athleteId];
+}
+
+async function preloadAll() {
+  await Promise.all(athletesCache.map(a => fetchEntries(a.id)));
+}
+
+// ── REALTIME LISTENER (coach only) ───────────────────────────────────
+function subscribeCoach() {
+  if (unsubAthletes) unsubAthletes();
+  unsubAthletes = db.collection('athletes').onSnapshot(async snap => {
+    athletesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    entriesCache  = {};
+    await preloadAll();
+    renderCoachStats();
+    renderCoach();
+    renderAlerts();
+    renderManage();
+  });
+}
+
+// ── AUTH STATE — auto-restore coach session on refresh ───────────────
+auth.onAuthStateChanged(async user => {
+  if (user && user.email === COACH_EMAIL) {
+    await fetchAthletes();
+    await preloadAll();
+    document.getElementById('s-login').classList.remove('active');
+    document.getElementById('s-coach').classList.add('active');
+    document.getElementById('share-link').textContent = window.location.href.split('?')[0];
+    subscribeCoach();
+  }
+  hideLoading();
+});
+
+// ── LOGIN ─────────────────────────────────────────────────────────────
+window.setRole = function(role, btn) {
+  currentRole = role;
+  document.querySelectorAll('.rsw-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ath-login').style.display   = role === 'athlete' ? 'block' : 'none';
+  document.getElementById('coach-login').style.display = role === 'coach'   ? 'block' : 'none';
+};
+
+window.doLogin = async function() {
+  const err = document.getElementById('login-err');
+  const btn = document.getElementById('login-btn');
+  err.style.display = 'none';
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+
+  if (currentRole === 'coach') {
+    const pw = document.getElementById('li-pw').value.trim();
+    try {
+      await auth.signInWithEmailAndPassword(COACH_EMAIL, pw);
+      await fetchAthletes();
+      await preloadAll();
+      enterCoach();
+    } catch(e) {
+      err.textContent = 'Incorrect password — please try again.';
+      err.style.display = 'block';
+      btn.textContent = 'Sign in →'; btn.disabled = false;
+    }
+    return;
+  }
+
+  // Athlete login — lookup name + code in Firestore
+  const name = document.getElementById('li-name').value.trim();
+  const code = document.getElementById('li-code').value.trim();
+  if (!name) {
+    err.textContent = 'Please enter your name.'; err.style.display = 'block';
+    btn.textContent = 'Sign in →'; btn.disabled = false;
+    return;
+  }
+  try {
+    await fetchAthletes();
+    const match = athletesCache.find(
+      a => a.name.toLowerCase() === name.toLowerCase() && a.code === code
+    );
+    if (match) {
+      await fetchEntries(match.id);
+      enterAthlete(match);
+    } else {
+      err.textContent = 'Incorrect details — please try again.';
+      err.style.display = 'block';
+      btn.textContent = 'Sign in →'; btn.disabled = false;
+    }
+  } catch(e) {
+    err.textContent = 'Connection error — check your internet and try again.';
+    err.style.display = 'block';
+    btn.textContent = 'Sign in →'; btn.disabled = false;
+  }
+};
+
+function enterAthlete(athlete) {
+  currentUser = athlete;
+  document.getElementById('ath-av').textContent       = initials(athlete.name);
+  document.getElementById('ath-name-top').textContent = athlete.name;
+  document.getElementById('s-login').classList.remove('active');
+  document.getElementById('s-athlete').classList.add('active');
+  document.getElementById('login-btn').textContent = 'Sign in →';
+  document.getElementById('login-btn').disabled    = false;
+  currentCheckInDate = todayStr();
+  resetForm(); initScales(); updateDateNav();
+}
+
+function enterCoach() {
+  document.getElementById('s-login').classList.remove('active');
+  document.getElementById('s-coach').classList.add('active');
+  document.getElementById('share-link').textContent = window.location.href.split('?')[0];
+  document.getElementById('login-btn').textContent = 'Sign in →';
+  document.getElementById('login-btn').disabled    = false;
+  subscribeCoach();
+}
+
+window.logout = async function() {
+  currentUser = null;
+  if (unsubAthletes) { unsubAthletes(); unsubAthletes = null; }
+  athletesCache = []; entriesCache = {};
+  try { await auth.signOut(); } catch(e) {}
+  document.getElementById('s-athlete').classList.remove('active');
+  document.getElementById('s-coach').classList.remove('active');
+  document.getElementById('s-login').classList.add('active');
+  ['li-name','li-code','li-pw'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  resetForm();
+};
+
+// ── SCALES ────────────────────────────────────────────────────────────
+function initScales() {
+  scaleVals = { clarity:0, confidence:0, motivation:0, intensity:0, bodyfeel:0, sleep:0, energy:0 };
+  [['sc-clarity','clarity'],['sc-confidence','confidence'],['sc-motivation','motivation'],
+   ['sc-intensity','intensity'],['sc-bodyfeel','bodyfeel'],['sc-sleep','sleep'],['sc-energy','energy']
+  ].forEach(([id, key]) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'sbtn'; btn.textContent = i;
+      btn.onclick = () => {
+        scaleVals[key] = i;
+        el.querySelectorAll('.sbtn').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+      };
+      el.appendChild(btn);
+    }
+  });
+}
+
+// ── CHIPS & PICKS ─────────────────────────────────────────────────────
+window.toggleChip = function(el, group, val) {
+  el.classList.toggle('on');
+  if (el.classList.contains('on')) { if (!selectedChips[group].includes(val)) selectedChips[group].push(val); }
+  else { selectedChips[group] = selectedChips[group].filter(v => v !== val); }
+};
+window.pickOne = function(el, group, val) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  picks[group] = val;
+};
+window.pickTrained = function(val, el) {
+  document.querySelectorAll('.binary-row .bin-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  picks.trained = val;
+  document.getElementById('training-detail').style.display = val === 'rest' ? 'none' : 'block';
+};
+
+// ── DATE NAVIGATION ───────────────────────────────────────────────────
+function updateDateNav() {
+  const today  = todayStr();
+  const isToday = currentCheckInDate === today;
+  const d = new Date(currentCheckInDate + 'T12:00:00');
+  document.getElementById('date-nav-label').textContent = isToday
+    ? 'Today'
+    : d.toLocaleDateString('en-GB', { weekday:'long' });
+  document.getElementById('date-nav-full').textContent = fmtDate(currentCheckInDate);
+  document.getElementById('btn-next-day').disabled = isToday;
+  checkAlreadyCheckedIn();
+}
+window.changeDay = function(dir) {
+  const d = new Date(currentCheckInDate + 'T12:00:00');
+  d.setDate(d.getDate() + dir);
+  const today = new Date(todayStr() + 'T12:00:00');
+  if (d > today) return;
+  const min = new Date(todayStr() + 'T12:00:00');
+  min.setDate(min.getDate() - 30);
+  if (d < min) return;
+  currentCheckInDate = d.toISOString().slice(0, 10);
+  resetForm(); updateDateNav();
+};
+
+// ── CHECK-IN ──────────────────────────────────────────────────────────
+function checkAlreadyCheckedIn() {
+  if (!currentUser) return;
+  const entries = getEntries(currentUser.id);
+  const done    = entries.some(e => e.date === currentCheckInDate);
+  document.getElementById('already-msg').style.display  = done ? 'block' : 'none';
+  document.getElementById('form-wrap').style.opacity    = done ? '0.45' : '1';
+  document.getElementById('submit-btn').disabled        = done;
+}
+
+window.submitCheckin = async function() {
+  if (!scaleVals.clarity || !scaleVals.confidence || !scaleVals.motivation) {
+    alert('Please rate all three mental scores before submitting.');
+    return;
+  }
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  const entry = {
+    ts:           Date.now(),
+    date:         currentCheckInDate,
+    mentalTools:  [...selectedChips.mental],
+    mentalDuration: picks.dur || '',
+    clarity:      scaleVals.clarity,
+    confidence:   scaleVals.confidence,
+    motivation:   scaleVals.motivation,
+    trained:      picks.trained || '',
+    trainingTypes: picks.trained && picks.trained !== 'rest' ? [...selectedChips.train] : [],
+    intensity:    picks.trained && picks.trained !== 'rest' ? scaleVals.intensity : 0,
+    bodyFeel:     picks.trained && picks.trained !== 'rest' ? scaleVals.bodyfeel  : 0,
+    sleepHours:   picks.sleep || '',
+    sleepQuality: scaleVals.sleep,
+    energyLevel:  scaleVals.energy,
+    soreness:     picks.soreness || '',
+    biggestWin:   document.getElementById('f-win').value.trim(),
+    mainChallenge:document.getElementById('f-challenge').value.trim(),
+    noteForCoach: document.getElementById('f-note').value.trim()
+  };
+  try {
+    await db.collection('checkins').doc(currentUser.id)
+      .collection('entries').add(entry);
+    // Update local cache
+    if (!entriesCache[currentUser.id]) entriesCache[currentUser.id] = [];
+    entriesCache[currentUser.id].unshift(entry);
+    entriesCache[currentUser.id].sort((a,b) => b.ts - a.ts);
+    document.getElementById('ok-msg').style.display    = 'block';
+    document.getElementById('already-msg').style.display = 'block';
+    document.getElementById('form-wrap').style.opacity = '0.45';
+    btn.textContent = '✅ Saved!';
+  } catch(e) {
+    alert('Failed to save — check your connection and try again.');
+    btn.textContent = 'Submit today\'s check-in →'; btn.disabled = false;
+  }
+};
+
+// ── RESET ─────────────────────────────────────────────────────────────
+function resetForm() {
+  selectedChips = { mental:[], train:[] };
+  picks = {};
+  document.querySelectorAll('.chip,.bin-btn').forEach(el => el.classList.remove('on'));
+  document.getElementById('training-detail').style.display = 'none';
+  ['f-win','f-challenge','f-note'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const ok = document.getElementById('ok-msg');   if (ok) ok.style.display = 'none';
+  const am = document.getElementById('already-msg'); if (am) am.style.display = 'none';
+}
+
+// ── ATHLETE PROGRESS ──────────────────────────────────────────────────
+function renderAthleteProgress() {
+  if (!currentUser) return;
+  const entries = getEntries(currentUser.id);
+  const streak  = calcStreak(entries);
+  const last7   = entries.slice(0, 7);
+  const avgCl   = avg(last7.map(e => e.clarity));
+  const avgCo   = avg(last7.map(e => e.confidence));
+  document.getElementById('ath-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-lbl">Streak</div><div class="stat-val gold">${streak}</div><div class="stat-sub">days in a row</div></div>
+    <div class="stat-card"><div class="stat-lbl">Avg Clarity</div><div class="stat-val">${avgCl || '–'}</div><div class="stat-sub">last 7 days</div></div>
+    <div class="stat-card"><div class="stat-lbl">Avg Confidence</div><div class="stat-val">${avgCo || '–'}</div><div class="stat-sub">last 7 days</div></div>
+  `;
+  if (trendChart) { trendChart.destroy(); trendChart = null; }
+  const pts = [...last7].reverse();
+  if (pts.length) {
+    trendChart = new Chart(document.getElementById('trend-chart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: pts.map(e => e.date.slice(5)),
+        datasets: [
+          { label:'Clarity',    data:pts.map(e=>e.clarity||null),    borderColor:'#5F3685', backgroundColor:'rgba(95,54,133,0.07)',  tension:0.4, pointRadius:4, borderWidth:2.5 },
+          { label:'Confidence', data:pts.map(e=>e.confidence||null), borderColor:'#E8B84B', backgroundColor:'rgba(232,184,75,0.07)', tension:0.4, pointRadius:4, borderWidth:2.5 },
+          { label:'Motivation', data:pts.map(e=>e.motivation||null), borderColor:'#2D9B6F', backgroundColor:'rgba(45,155,111,0.07)', tension:0.4, pointRadius:4, borderWidth:2.5 }
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:true,
+        scales: { y:{min:0,max:10,ticks:{font:{size:10},color:'#6B6880',stepSize:2},grid:{color:'rgba(0,0,0,0.04)'}}, x:{ticks:{font:{size:10},color:'#6B6880'},grid:{display:false}} },
+        plugins: { legend:{labels:{font:{size:11},color:'#1E1A2E',usePointStyle:true,pointStyleWidth:8,padding:16}} }
+      }
+    });
+  }
+  const listEl = document.getElementById('ath-hist-list');
+  if (!entries.length) { listEl.innerHTML = '<div class="empty-state">No check-ins yet.<br>Start today — even 2 minutes builds the habit.</div>'; return; }
+  listEl.innerHTML = entries.slice(0, 30).map(e => `
+    <div class="hist-item" onclick="this.classList.toggle('open')">
+      <div class="hist-header">
+        <span class="hist-date">${fmtDate(e.date)}</span>
+        <span class="hist-chevron">▼</span>
+      </div>
+      <div class="hist-scores">
+        <span class="hs">Clarity <b>${e.clarity||'–'}</b></span>
+        <span class="hs">Confidence <b>${e.confidence||'–'}</b></span>
+        <span class="hs">Motivation <b>${e.motivation||'–'}</b></span>
+      </div>
+      <div class="hist-detail">
+        <div class="hist-detail-grid">
+          <div class="hd-block"><div class="hd-label">Sleep</div><div class="hd-val">${e.sleepHours||'–'} · Quality ${e.sleepQuality||'–'}/10</div></div>
+          <div class="hd-block"><div class="hd-label">Energy</div><div class="hd-val">${e.energyLevel||'–'}/10</div></div>
+          <div class="hd-block"><div class="hd-label">Training</div><div class="hd-val">${e.trained==='rest'?'Rest day':e.trained==='comp'?'Competition':'Yes'+(e.trainingTypes&&e.trainingTypes.length?' — '+e.trainingTypes.join(', '):'')}</div></div>
+          <div class="hd-block"><div class="hd-label">Soreness</div><div class="hd-val">${e.soreness||'–'}</div></div>
+        </div>
+        ${e.mentalTools&&e.mentalTools.length?`<div class="chips-display">${e.mentalTools.map(t=>`<span class="chip-sm">${t}</span>`).join('')}</div>`:''}
+        ${e.biggestWin?`<div class="hist-note"><b>Win</b>${e.biggestWin}</div>`:''}
+        ${e.mainChallenge?`<div class="hist-note"><b>Challenge</b>${e.mainChallenge}</div>`:''}
+        ${e.noteForCoach?`<div class="hist-note"><b>Note for coach</b>${e.noteForCoach}</div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── COACH VIEW ────────────────────────────────────────────────────────
+function renderCoachStats() {
+  const athletes = getAthletes();
+  const today    = todayStr();
+  const checkedToday = athletes.filter(a => { const e = getEntries(a.id); return e.length > 0 && e[0].date === today; }).length;
+  const alerts   = getAlerts().length;
+  const total    = athletes.reduce((n, a) => n + getEntries(a.id).length, 0);
+  document.getElementById('coach-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-lbl">Athletes</div><div class="stat-val">${athletes.length}</div></div>
+    <div class="stat-card"><div class="stat-lbl">In today</div><div class="stat-val gold">${checkedToday}</div></div>
+    <div class="stat-card"><div class="stat-lbl">Alerts</div><div class="stat-val" style="color:var(--red)">${alerts}</div></div>
+    <div class="stat-card"><div class="stat-lbl">Total logs</div><div class="stat-val">${total}</div></div>
+  `;
+  // Aggregate chart
+  const days = [];
+  for (let i = 6; i >= 0; i--) { const d = new Date(today+'T12:00:00'); d.setDate(d.getDate()-i); days.push(d.toISOString().slice(0,10)); }
+  const dCl=[], dCo=[], dMo=[], hasData=[];
+  days.forEach(day => {
+    const sc = { cl:[], co:[], mo:[] };
+    athletes.forEach(a => getEntries(a.id).filter(e => e.date === day).forEach(e => { sc.cl.push(e.clarity); sc.co.push(e.confidence); sc.mo.push(e.motivation); }));
+    dCl.push(sc.cl.length ? avg(sc.cl) : null);
+    dCo.push(sc.co.length ? avg(sc.co) : null);
+    dMo.push(sc.mo.length ? avg(sc.mo) : null);
+    hasData.push(sc.cl.length > 0);
+  });
+  const wrap = document.getElementById('overview-chart-wrap');
+  if (!hasData.some(Boolean)) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  setTimeout(() => {
+    const canvas = document.getElementById('overview-chart'); if (!canvas) return;
+    if (overviewChart) { overviewChart.destroy(); overviewChart = null; }
+    overviewChart = new Chart(canvas.getContext('2d'), {
+      type:'line',
+      data:{ labels:days.map(d=>d.slice(5)), datasets:[
+        {label:'Clarity',    data:dCl, borderColor:'#5F3685', backgroundColor:'rgba(95,54,133,0.10)', tension:0.35, fill:true,  pointRadius:4, borderWidth:2.5, spanGaps:true},
+        {label:'Confidence', data:dCo, borderColor:'#E8B84B', backgroundColor:'rgba(232,184,75,0.08)', tension:0.35, fill:false, pointRadius:4, borderWidth:2.5, spanGaps:true},
+        {label:'Motivation', data:dMo, borderColor:'#2D9B6F', backgroundColor:'rgba(45,155,111,0.08)', tension:0.35, fill:false, pointRadius:4, borderWidth:2.5, spanGaps:true}
+      ]},
+      options:{ plugins:{legend:{labels:{font:{size:11,family:'Plus Jakarta Sans'},boxWidth:12,padding:10}}}, scales:{y:{min:0,max:10,ticks:{stepSize:2,font:{size:10}},grid:{color:'rgba(95,54,133,0.07)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}, responsive:true, maintainAspectRatio:true, animation:{duration:400} }
+    });
+  }, 50);
+}
+
+function renderCoach() {
+  const athletes = getAthletes();
+  const search   = (document.getElementById('cf-search')||{}).value || '';
+  const sortBy   = (document.getElementById('cf-sort')||{}).value   || 'name';
+  let list = athletes.filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
+  list.sort((a, b) => {
+    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    const ea = getEntries(a.id), eb = getEntries(b.id);
+    if (sortBy === 'last') return (ea.length?ea[0].ts:0) > (eb.length?eb[0].ts:0) ? -1 : 1;
+    const avgA = avg(ea.slice(0,7).map(e=>(e.clarity+e.confidence+e.motivation)/3));
+    const avgB = avg(eb.slice(0,7).map(e=>(e.clarity+e.confidence+e.motivation)/3));
+    return avgB - avgA;
+  });
+  const el = document.getElementById('coach-list');
+  if (!list.length) { el.innerHTML = '<div class="empty-state">No athletes found.</div>'; return; }
+  el.innerHTML = list.map(a => {
+    const entries = getEntries(a.id);
+    const latest  = entries.length ? entries[0] : null;
+    const days    = latest ? daysAgo(latest.date) : 999;
+    const isAlert = days >= 4 || (latest && Math.min(latest.clarity, latest.confidence, latest.motivation) < 5);
+    return `<div class="ath-card ${isAlert?'alert-card':''}" onclick="this.classList.toggle('open')">
+      <div class="ath-row-main">
+        <div class="ath-av">${initials(a.name)}</div>
+        <div class="ath-info">
+          <div class="ath-name">${a.name}${isAlert?` <span style="font-size:11px;color:var(--red);font-weight:600">● attention needed</span>`:''}</div>
+          <div class="ath-sport">${a.sport} · ${latest?`Last logged: ${fmtDate(latest.date)}`:'No check-ins yet'}</div>
+        </div>
+        <div class="ath-scores">
+          ${latest?`<div class="sc ${scClass(latest.clarity)}" title="Clarity">${latest.clarity}</div><div class="sc ${scClass(latest.confidence)}" title="Confidence">${latest.confidence}</div>`:`<div class="sc sc-none">–</div>`}
+        </div>
+      </div>
+      <div class="ath-detail">${renderAthDetail(a)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAthDetail(a) {
+  const entries = getEntries(a.id);
+  if (!entries.length) return '<p style="font-size:13px;color:var(--muted);padding:6px 0">No check-ins yet.</p>';
+  const l7     = entries.slice(0, 7);
+  const streak = calcStreak(entries);
+  const safeId = a.id;
+  const html = `<div class="hist-detail-grid" style="margin-bottom:12px">
+    <div class="hd-block"><div class="hd-label">Avg Clarity (7d)</div><div class="hd-val">${avg(l7.map(e=>e.clarity))||'–'}/10</div></div>
+    <div class="hd-block"><div class="hd-label">Avg Confidence (7d)</div><div class="hd-val">${avg(l7.map(e=>e.confidence))||'–'}/10</div></div>
+    <div class="hd-block"><div class="hd-label">Avg Motivation (7d)</div><div class="hd-val">${avg(l7.map(e=>e.motivation))||'–'}/10</div></div>
+    <div class="hd-block"><div class="hd-label">Current streak</div><div class="hd-val">${streak} day${streak!==1?'s':''}</div></div>
+  </div>
+  <div class="mini-chart-wrap">
+    <div class="mini-chart-title">Mental scores — last 7 days</div>
+    <canvas id="coach-mini-${safeId}" height="100"></canvas>
+  </div>
+  ${entries.slice(0,5).map(e=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;margin-top:8px">
+    <span style="color:var(--purple);font-weight:700">${fmtDate(e.date)}</span>
+    <span style="margin-left:8px;color:var(--muted)">Clarity ${e.clarity||'–'} · Conf ${e.confidence||'–'} · Motiv ${e.motivation||'–'}</span>
+    ${e.mentalTools&&e.mentalTools.length?`<div style="margin-top:3px;color:var(--muted);font-size:11px">${e.mentalTools.join(' · ')}</div>`:''}
+    ${e.noteForCoach?`<div style="color:var(--muted);margin-top:3px;font-style:italic">💬 "${e.noteForCoach}"</div>`:''}
+  </div>`).join('')}`;
+  setTimeout(() => {
+    const el = document.getElementById('coach-mini-'+safeId); if (!el) return;
+    if (coachMiniCharts[safeId]) { coachMiniCharts[safeId].destroy(); }
+    const pts = [...l7].reverse();
+    coachMiniCharts[safeId] = new Chart(el.getContext('2d'), {
+      type:'line',
+      data:{ labels:pts.map(e=>e.date.slice(5)), datasets:[
+        {label:'Clarity',    data:pts.map(e=>e.clarity),    borderColor:'#5F3685', backgroundColor:'rgba(95,54,133,0.08)', tension:0.35, fill:true,  pointRadius:3, borderWidth:2},
+        {label:'Confidence', data:pts.map(e=>e.confidence), borderColor:'#E8B84B', backgroundColor:'rgba(232,184,75,0.07)', tension:0.35, fill:false, pointRadius:3, borderWidth:2},
+        {label:'Motivation', data:pts.map(e=>e.motivation), borderColor:'#2D9B6F', backgroundColor:'rgba(45,155,111,0.07)', tension:0.35, fill:false, pointRadius:3, borderWidth:2}
+      ]},
+      options:{ plugins:{legend:{labels:{font:{size:10,family:'Plus Jakarta Sans'},boxWidth:10,padding:8}}}, scales:{y:{min:0,max:10,ticks:{stepSize:2,font:{size:10}},grid:{color:'rgba(95,54,133,0.07)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}, responsive:true, maintainAspectRatio:true, animation:{duration:300} }
+    });
+  }, 50);
+  return html;
+}
+
+function getAlerts() {
+  return getAthletes().reduce((acc, a) => {
+    const entries = getEntries(a.id);
+    const days    = entries.length ? daysAgo(entries[0].date) : 999;
+    if (days >= 4) acc.push({ a, reason:`Hasn't logged for ${days===999?'any check-ins yet':days+' days'}` });
+    else if (entries.length && Math.min(entries[0].clarity, entries[0].confidence, entries[0].motivation) < 5)
+      acc.push({ a, reason:`Score below 5 on ${fmtDate(entries[0].date)}` });
+    return acc;
+  }, []);
+}
+
+function renderAlerts() {
+  const alerts = getAlerts();
+  document.getElementById('alert-count').textContent = alerts.length;
+  const el = document.getElementById('alerts-list');
+  if (!alerts.length) { el.innerHTML = '<div class="empty-state">✅ All clear — no athletes need attention right now.</div>'; return; }
+  el.innerHTML = alerts.map(({a,reason}) => `
+    <div class="alert-item">
+      <div class="alert-dot"></div>
+      <div class="a-info"><div class="a-name">${a.name}</div><div class="a-reason">${a.sport} · ${reason}</div></div>
+    </div>`).join('');
+}
+
+function renderManage() {
+  const athletes = getAthletes();
+  const el = document.getElementById('ath-list-ui');
+  if (!athletes.length) { el.innerHTML = '<div class="empty-state" style="padding:10px">No athletes added yet.</div>'; return; }
+  el.innerHTML = athletes.map(a => `
+    <div class="ath-manage-row">
+      <div class="ath-av" style="width:34px;height:34px;font-size:12px">${initials(a.name)}</div>
+      <div class="ath-manage-info">
+        <div class="ath-manage-name">${a.name} <span style="font-size:11px;color:var(--muted);font-weight:400">· ${a.sport}</span></div>
+        <div class="ath-manage-code">Code: ${a.code}</div>
+      </div>
+      <button class="btn-del" onclick="removeAthlete('${a.id}',event)">Remove</button>
+    </div>`).join('');
+}
+
+window.addAthlete = async function() {
+  const name  = document.getElementById('new-name').value.trim();
+  const sport = document.getElementById('new-sport').value.trim();
+  const code  = document.getElementById('new-code').value.trim() || DEFAULT_CODE;
+  if (!name) { alert("Please enter the athlete's name."); return; }
+  const btn = document.getElementById('add-btn');
+  btn.textContent = 'Adding…'; btn.disabled = true;
+  try {
+    const ref = await db.collection('athletes').add({ name, sport: sport||'Sport', code, createdAt: Date.now() });
+    athletesCache.push({ id: ref.id, name, sport: sport||'Sport', code });
+    ['new-name','new-sport','new-code'].forEach(id => document.getElementById(id).value = '');
+    renderManage(); renderCoach(); renderCoachStats();
+  } catch(e) {
+    alert('Failed to add athlete — please try again.');
+  }
+  btn.textContent = '+ Add athlete'; btn.disabled = false;
+};
+
+window.removeAthlete = async function(id, e) {
+  e.stopPropagation();
+  if (!confirm('Remove this athlete from the roster?')) return;
+  try {
+    await db.collection('athletes').doc(id).delete();
+    athletesCache = athletesCache.filter(a => a.id !== id);
+    delete entriesCache[id];
+    renderManage(); renderCoach(); renderCoachStats();
+  } catch(e) {
+    alert('Failed to remove — please try again.');
+  }
+};
+
+window.copyLink = function() {
+  const link = document.getElementById('share-link').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.querySelector('.copy-btn'); btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }).catch(() => alert('Copy this link:\n'+link));
+};
+
+// ── NAVIGATION ────────────────────────────────────────────────────────
+window.showATab = function(tab, btn) {
+  document.querySelectorAll('#s-athlete .tabview').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#s-athlete .bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('at-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'progress') renderAthleteProgress();
+};
+window.showCTab = function(tab, btn) {
+  document.querySelectorAll('#s-coach .tabview').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#s-coach .bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ct-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'overview') { renderCoachStats(); renderCoach(); }
+  if (tab === 'alerts')   renderAlerts();
+  if (tab === 'manage')   renderManage();
+};
+</script>
+</body>
+</html>
