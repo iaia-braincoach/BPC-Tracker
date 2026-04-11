@@ -88,9 +88,33 @@ html, body { height:100%; font-family:var(--font); color:var(--black); backgroun
 .lfield label { display:block; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:7px; }
 .lfield input { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:14px; font-family:var(--font); background:var(--bg); color:var(--black); outline:none; transition:border-color .15s; }
 .lfield input:focus { border-color:var(--purple); background:var(--bg2); }
-.login-btn { width:100%; padding:13px; background:var(--purple); color:#fff; border:none; border-radius:9px; font-size:14px; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .15s; letter-spacing:0.01em; }
-.login-btn:hover { background:var(--purple-dark); }
-.login-btn:disabled { opacity:0.6; cursor:default; }
+.login-btn { 
+  width:100%; 
+  padding:15px; 
+  background:var(--purple); 
+  color:#fff; 
+  border:none; 
+  border-radius:10px; 
+  font-size:15px; 
+  font-weight:700; 
+  font-family:var(--font); 
+  cursor:pointer; 
+  transition:all .15s; 
+  letter-spacing:0.01em; 
+}
+
+.login-btn:hover { 
+  background:var(--purple-dark); 
+}
+
+.login-btn:active {
+  transform: scale(0.97);
+}
+
+.login-btn:disabled { 
+  opacity:0.6; 
+  cursor:default; 
+}
 .login-err { color:var(--red); font-size:12px; margin-top:10px; display:none; }
 .login-hint { font-size:11px; color:var(--muted); margin-top:16px; text-align:center; line-height:1.7; background:var(--bg); border-radius:8px; padding:10px 14px; }
 
