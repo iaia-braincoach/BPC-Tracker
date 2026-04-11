@@ -114,7 +114,12 @@ html, body { height:100%; font-family:var(--font); color:var(--black); backgroun
 
 /* ── PAGE ── */
 .page-body { flex:1; overflow-y:auto; background:var(--bg); }
-.page-inner { max-width:600px; margin:0 auto; padding:20px 16px 100px; }
+.page-inner { max-width:600px; margin:0 auto; padding:20px 16px 100px; } 
+  @media (max-width: 600px) {
+  .page-inner {
+    padding: 16px 12px 90px;
+  }
+}
 .tabview { display:none; }
 .tabview.active { display:block; }
 
