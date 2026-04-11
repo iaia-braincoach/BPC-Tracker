@@ -231,7 +231,11 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
 .ath-manage-code { font-size:11px; color:var(--muted); font-family:monospace; background:var(--bg); padding:2px 7px; border-radius:4px; margin-top:3px; display:inline-block; }
 .btn-del { padding:5px 12px; border:1.5px solid rgba(226,75,74,0.3); border-radius:6px; background:none; cursor:pointer; font-size:11px; font-family:var(--font); color:var(--red); font-weight:600; transition:all .15s; }
 .btn-del:hover { background:var(--red-light); }
-.add-form { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; padding-top:14px; border-top:1.5px solid var(--border); }
+.add-form { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; padding-top:14px; border-top:1.5px solid var(--border); } @media (max-width: 600px) {
+  .add-form {
+    grid-template-columns: 1fr;
+  }
+}
 .add-form input { padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:var(--font); background:var(--bg); color:var(--black); outline:none; }
 .add-form input:focus { border-color:var(--purple); background:var(--bg2); }
 .add-form-btn { grid-column:1/-1; padding:11px; background:var(--purple); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .15s; }
