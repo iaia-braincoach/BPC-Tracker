@@ -341,10 +341,8 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
         <button class="rsw-btn" onclick="setRole('coach',this)">I'm the coach</button>
       </div>
     <div id="ath-login">
-  <div class="lfield">
-    <label>Access code</label>
-    <input id="li-code" type="password" placeholder="Enter your code" onkeydown="if(event.key==='Enter')doLogin()">
-  </div>
+  <div class="lfield"><label>Your name</label><input id="li-name" type="text"></div>
+  <div class="lfield"><label>Access code</label><input id="li-code" type="password"></div>
 </div>
       <div id="coach-login" style="display:none">
         <div class="lfield"><label>Coach password</label><input id="li-pw" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
