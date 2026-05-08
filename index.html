@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#5F3685">
 
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/logo-brain.png">
+<link rel="apple-touch-icon" href="icon-512.png">
 
 <title>BPC · Performance Tracker</title>
 
@@ -58,20 +58,23 @@ html, body { height:100%; font-family:var(--font); color:var(--black); backgroun
 .login-wrap { width:100%; max-width:400px; }
 .login-brand { text-align:center; margin-bottom:28px; }
 .login-logo-ring {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(95,54,133,0.08);
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 14px;
+  margin: 0 auto 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(95,54,133,0.22);
 }
 
 .login-logo-ring img {
-  width: 45px;
-  height: 45px;
-  object-fit: contain;
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 22px;
 }
 .login-brand-name { font-size:20px; font-weight:700; color:var(--purple); letter-spacing:-0.02em; margin-bottom:4px; }
 .login-brand-sub { font-size:13px; color:var(--muted); }
@@ -467,7 +470,7 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
   <div class="login-wrap">
     <div class="login-brand">
       <div class="login-logo-ring">
-        <img src="assets/logo-brain.png" alt="BPC" onerror="this.parentElement.innerHTML='🧠'">
+        <img src="icon-512.png" alt="BPC" onerror="this.parentElement.innerHTML='🧠'">
       </div>
       <div class="login-brand-name">Brain Performance Coaching</div>
       <div class="login-brand-sub">Daily performance tracker</div>
