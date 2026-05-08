@@ -122,7 +122,7 @@ html, body { height:100%; font-family:var(--font); color:var(--black); backgroun
 /* ── TOPBAR ── */
 .topbar { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:var(--bg2); border-bottom:1.5px solid var(--border); flex-shrink:0; position:sticky; top:0; z-index:10; }
 .topbar-brand { display:flex; align-items:center; gap:9px; }
-.topbar-brand img { height:30px; width:30px; }
+.topbar-brand img { height:30px; width:30px; object-fit:contain; }
 .topbar-brand-name { font-size:15px; font-weight:700; color:var(--purple); letter-spacing:-0.01em; }
 .topbar-right { display:flex; align-items:center; gap:10px; }
 .t-avatar { width:32px; height:32px; border-radius:50%; background:var(--purple-dim); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--purple); flex-shrink:0; }
@@ -144,12 +144,12 @@ html, body { height:100%; font-family:var(--font); color:var(--black); backgroun
   margin:0 auto; 
   padding:24px 18px 110px; 
 } 
-  @media (max-width: 600px) {
-  .page-inner {
-    padding: 16px 12px 90px;
-  }
 .tabview { display:none; }
 .tabview.active { display:block; }
+
+@media (max-width: 600px) {
+  .page-inner { padding: 16px 12px 90px; }
+}
 
 /* ── FORM SECTIONS ── */
 .form-section { background:var(--bg2); border-radius:16px; border:1.5px solid var(--border); padding:20px; margin-bottom:12px; }
@@ -226,6 +226,130 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
 .hist-note { margin-top:8px; font-size:12px; color:var(--muted); line-height:1.65; }
 .hist-note b { color:var(--black); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:2px; }
 
+/* ── ATHLETE DETAIL SCREEN (coach only) ── */
+.detail-topbar { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:var(--bg2); border-bottom:1.5px solid var(--border); flex-shrink:0; position:sticky; top:0; z-index:10; }
+.detail-back { display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer; font-size:14px; font-weight:600; color:var(--purple); font-family:var(--font); padding:6px 0; }
+.detail-back:hover { opacity:0.75; }
+.detail-athlete-title { font-size:15px; font-weight:700; color:var(--black); letter-spacing:-0.01em; text-align:center; }
+.detail-athlete-sport { font-size:11px; color:var(--muted); text-align:center; }
+.range-btns { display:flex; gap:4px; }
+.range-btn { padding:5px 12px; border:1.5px solid var(--border); border-radius:6px; background:var(--bg); font-size:12px; font-weight:600; font-family:var(--font); color:var(--muted); cursor:pointer; transition:all .15s; }
+.range-btn.active { background:var(--purple); border-color:var(--purple); color:#fff; }
+.detail-stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+@media(min-width:480px){ .detail-stats-row { grid-template-columns:repeat(6,1fr); } }
+.detail-stat { background:var(--bg2); border-radius:10px; border:1.5px solid var(--border); padding:12px 8px; text-align:center; }
+.detail-stat-lbl { font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:5px; }
+.detail-stat-val { font-size:22px; font-weight:700; color:var(--purple); letter-spacing:-0.02em; line-height:1; }
+.detail-stat-val.gold { color:var(--gold); }
+.detail-stat-val.green { color:var(--green); }
+.pattern-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.pattern-row:last-child { border-bottom:none; }
+.pattern-tool { font-size:12px; font-weight:600; color:var(--black); flex:1; min-width:0; }
+.pattern-days { font-size:11px; color:var(--muted); flex-shrink:0; width:42px; text-align:right; }
+.pattern-bars { display:flex; gap:5px; flex-shrink:0; }
+.pattern-bar-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.pattern-bar-bg { width:26px; height:36px; background:var(--bg3); border-radius:4px; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; }
+.pattern-bar-fill { width:100%; border-radius:4px; transition:height .4s; }
+.pattern-bar-lbl { font-size:9px; color:var(--muted); font-weight:600; }
+.pattern-score { font-size:12px; font-weight:700; color:var(--black); }
+.full-entry { background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; margin-bottom:8px; overflow:hidden; }
+.full-entry-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; cursor:pointer; }
+.full-entry-header:hover { background:var(--bg); }
+.full-entry-date { font-size:13px; font-weight:700; color:var(--purple); }
+.full-entry-scores { display:flex; gap:6px; }
+.full-entry-body { display:none; padding:0 16px 16px; border-top:1.5px solid var(--border); }
+.full-entry.open .full-entry-body { display:block; }
+.full-entry-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0 10px; }
+.feg-block { background:var(--bg); border-radius:8px; padding:10px 12px; }
+.feg-lbl { font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; }
+.feg-val { font-size:13px; color:var(--black); font-weight:600; }
+.full-entry-tools { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0; }
+.full-entry-note { margin-top:8px; padding:10px 12px; background:var(--bg3); border-radius:8px; font-size:12px; color:var(--muted); line-height:1.65; }
+.full-entry-note b { display:block; font-size:10px; font-weight:700; color:var(--purple); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:3px; }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  /* Detail screen topbar wraps on small phones */
+  .detail-topbar { height:auto; flex-wrap:wrap; padding:10px 16px 8px; gap:6px 0; }
+  .detail-back { flex:0 0 auto; }
+  .detail-athlete-title { font-size:14px; order:0; flex:1; }
+  .range-btns { width:100%; justify-content:center; padding-bottom:2px; }
+  .range-btn { flex:1; text-align:center; }
+
+  /* Topbar */
+  .topbar { padding:0 14px; }
+  .topbar-brand-name { font-size:14px; }
+  .btn-out { padding:5px 10px; font-size:11px; }
+
+  /* Page padding */
+  .page-inner { padding:14px 12px 100px; }
+
+  /* Stats rows: 2 columns on mobile */
+  .stats-row { grid-template-columns:repeat(2,1fr); gap:8px; }
+  .coach-stats-row { grid-template-columns:repeat(2,1fr); gap:8px; }
+  .detail-stats-row { grid-template-columns:repeat(3,1fr); gap:6px; }
+  .stat-val { font-size:24px; }
+  .detail-stat-val { font-size:20px; }
+
+  /* Charts */
+  .chart-card { padding:12px 12px 10px; }
+  .coach-chart-card { padding:14px; }
+
+  /* Athlete cards */
+  .ath-row-main { padding:12px 14px; gap:10px; }
+  .ath-av { width:36px; height:36px; font-size:13px; }
+  .ath-name { font-size:13px; }
+  .ath-sport { font-size:11px; }
+  .sc { width:26px; height:26px; font-size:10px; }
+
+  /* Manage card */
+  .manage-card { padding:16px; }
+  .manage-card h3 { font-size:14px; }
+  .ath-manage-row { gap:8px; }
+  .ath-manage-name { font-size:12px; }
+  .btn-edit, .btn-del, .btn-save { padding:5px 9px; font-size:11px; }
+  .edit-inline { grid-template-columns:1fr; gap:5px; }
+
+  /* Add form: single column */
+  .add-form { grid-template-columns:1fr; }
+  .add-form input[style*="grid-column"] { grid-column:auto; }
+  .add-form-btn { grid-column:auto; }
+
+  /* Filters row */
+  .filters-row { flex-direction:column; gap:7px; }
+  .fsearch, .fsel { width:100%; }
+
+  /* Alert / logged items */
+  .alert-item, .logged-item { padding:10px 12px; gap:10px; }
+  .a-name { font-size:13px; }
+  .a-reason { font-size:11px; }
+
+  /* History entries */
+  .full-entry-header { padding:11px 14px; }
+  .full-entry-date { font-size:12px; }
+  .full-entry-body { padding:0 14px 14px; }
+  .full-entry-grid { grid-template-columns:1fr 1fr; gap:6px; }
+  .feg-val { font-size:12px; }
+
+  /* History header legend wraps gracefully */
+  .sec-hdr { flex-wrap:wrap; gap:6px; }
+  .sec-hdr > div { width:100%; justify-content:flex-start; }
+
+  /* Patterns */
+  .pattern-bar-bg { width:22px; height:30px; }
+  .pattern-bar-lbl { font-size:8px; }
+
+  /* Bottom nav — safe area for iPhone */
+  .bottom-nav { padding-bottom:env(safe-area-inset-bottom, 8px); }
+  .bnav-btn { font-size:9px; padding:8px 4px 10px; }
+  .bnav-btn svg { width:18px; height:18px; }
+
+  /* Link box */
+  .link-box { flex-wrap:wrap; gap:8px; }
+  .link-text { font-size:11px; }
+  .copy-btn { width:100%; text-align:center; }
+}
+
 /* ── COACH ── */
 .coach-stats-row { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
 @media(min-width:480px){ .coach-stats-row { grid-template-columns:repeat(4,1fr); } }
@@ -263,6 +387,16 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
 .ath-manage-code { font-size:11px; color:var(--muted); font-family:monospace; background:var(--bg); padding:2px 7px; border-radius:4px; margin-top:3px; display:inline-block; }
 .btn-del { padding:5px 12px; border:1.5px solid rgba(226,75,74,0.3); border-radius:6px; background:none; cursor:pointer; font-size:11px; font-family:var(--font); color:var(--red); font-weight:600; transition:all .15s; }
 .btn-del:hover { background:var(--red-light); }
+.btn-edit { padding:5px 12px; border:1.5px solid var(--border); border-radius:6px; background:none; cursor:pointer; font-size:11px; font-family:var(--font); color:var(--muted); font-weight:600; transition:all .15s; }
+.btn-edit:hover { background:var(--purple-dim); color:var(--purple); border-color:rgba(95,54,133,0.3); }
+.btn-save { padding:5px 12px; border:1.5px solid rgba(45,155,111,0.4); border-radius:6px; background:none; cursor:pointer; font-size:11px; font-family:var(--font); color:var(--green); font-weight:600; transition:all .15s; }
+.btn-save:hover { background:var(--green-light); }
+.edit-inline { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; align-items:center; flex:1; }
+.edit-inline input { padding:6px 10px; border:1.5px solid var(--border); border-radius:7px; font-size:12px; font-family:var(--font); background:var(--bg); color:var(--black); outline:none; }
+.edit-inline input:focus { border-color:var(--purple); background:var(--bg2); }
+@media(max-width:480px){ .edit-inline { grid-template-columns:1fr 1fr; } }
+.logged-item { background:var(--bg2); border:1.5px solid rgba(45,155,111,0.25); border-radius:10px; padding:10px 14px; margin-bottom:7px; display:flex; align-items:center; gap:10px; }
+.logged-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
 .add-form { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; padding-top:14px; border-top:1.5px solid var(--border); } @media (max-width: 600px) {
   .add-form {
     grid-template-columns: 1fr;
@@ -289,7 +423,9 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
 .sec-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .sec-hdr h2 { font-size:17px; font-weight:700; color:var(--black); letter-spacing:-0.02em; }
 .tag { font-size:11px; font-weight:700; padding:4px 10px; border-radius:10px; }
-.tag-red { background:var(--red-light); color:var(--red); }
+.tag-red   { background:var(--red-light);   color:var(--red); }
+.tag-green { background:var(--green-light);  color:var(--green); }
+.tag-muted { background:var(--bg3);          color:var(--muted); }
 .empty-state { text-align:center; padding:40px 20px; color:var(--muted); font-size:13px; line-height:1.7; }
 
 /* ── DATE NAV ── */
@@ -549,7 +685,29 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
           <div class="coach-chart-sub">Average mental scores across all athletes who checked in each day</div>
           <canvas id="overview-chart" height="110"></canvas>
         </div>
-        <div class="filters-row">
+        <div class="sec-hdr" style="margin-top:4px">
+          <h2>Quick glance</h2>
+        </div>
+        <div id="overview-quick-list"></div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="tabview" id="ct-alerts">
+        <div class="sec-hdr">
+          <h2>Logged today</h2>
+          <span class="tag tag-green" id="logged-today-count">0</span>
+        </div>
+        <div id="logged-today-list" style="margin-bottom:22px"></div>
+        <div class="sec-hdr">
+          <h2>Check in on</h2>
+          <span class="tag tag-red" id="alert-count">0</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.65">Athletes who haven't logged for 4+ days, or scored below 5 in the last 48 hours.</p>
+        <div id="alerts-list"></div>
+        <div class="sec-hdr" style="margin-top:22px">
+          <h2>All athletes</h2>
+        </div>
+        <div class="filters-row" style="margin-bottom:10px">
           <input class="fsearch" type="text" id="cf-search" placeholder="Search athlete…" oninput="renderCoach()">
           <select class="fsel" id="cf-sort" onchange="renderCoach()">
             <option value="name">Sort: Name</option>
@@ -560,17 +718,7 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
         <div id="coach-list"></div>
       </div>
 
-      <!-- ALERTS -->
-      <div class="tabview" id="ct-alerts">
-        <div class="sec-hdr">
-          <h2>Athletes to check in on</h2>
-          <span class="tag tag-red" id="alert-count">0</span>
-        </div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.65">Athletes who haven't logged for 4 or more consecutive days, or who scored below 5 in the last 48 hours.</p>
-        <div id="alerts-list"></div>
-      </div>
-
-      <!-- MANAGE -->
+      <!-- ATHLETES -->
       <div class="tabview" id="ct-manage">
         <div class="manage-card">
           <h3>Registered athletes</h3>
@@ -591,7 +739,7 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
           </div>
           <div style="margin-top:14px;background:var(--bg);border-radius:10px;padding:14px;font-size:12px;color:var(--muted);line-height:1.7">
             <strong style="color:var(--black);display:block;margin-bottom:4px">📱 How to save as an app on their phone</strong>
-            <strong>iPhone:</strong> Open link in Safari → tap the Share button → select "Add to Home Screen"<br>
+            <strong>iPhone:</strong> Open link in Safari → tap the Share button → "Add to Home Screen"<br>
             <strong>Android:</strong> Open in Chrome → tap the three dots → "Add to Home screen"<br>
             It will appear as an app icon — no App Store needed.
           </div>
@@ -613,6 +761,46 @@ textarea.finput { resize:vertical; min-height:72px; line-height:1.6; }
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       Athletes
     </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ ATHLETE DETAIL (COACH) ════════════════════════════ -->
+<div class="screen" id="s-ath-detail">
+  <div class="detail-topbar">
+    <button class="detail-back" onclick="closeAthDetail()">← Back</button>
+    <div>
+      <div class="detail-athlete-title" id="detail-ath-name">—</div>
+      <div class="detail-athlete-sport" id="detail-ath-sport">—</div>
+    </div>
+    <div class="range-btns">
+      <button class="range-btn active" onclick="setDetailRange(7,this)" id="rbtn-7">7d</button>
+      <button class="range-btn" onclick="setDetailRange(30,this)" id="rbtn-30">30d</button>
+      <button class="range-btn" onclick="setDetailRange(0,this)" id="rbtn-all">All</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-inner">
+      <div class="detail-stats-row" id="detail-stats"></div>
+      <div class="chart-card">
+        <div class="chart-title">Mental scores over time</div>
+        <canvas id="detail-chart" height="160"></canvas>
+      </div>
+      <div class="chart-card" id="detail-patterns-wrap">
+        <div class="chart-title" style="margin-bottom:6px">Patterns — what drives the scores</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.65">Average mental scores on days when each tool was used vs. days with no tools. Needs at least 5 entries to show patterns.</p>
+        <div id="detail-patterns"></div>
+      </div>
+      <div class="sec-hdr" style="margin-top:4px">
+        <h2>Full history</h2>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><span style="width:14px;height:14px;border-radius:50%;background:rgba(95,54,133,0.15);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#5F3685">Cl</span>Clarity</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><span style="width:14px;height:14px;border-radius:50%;background:rgba(232,184,75,0.18);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#7A5A00">Co</span>Confidence</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><span style="width:14px;height:14px;border-radius:50%;background:rgba(45,155,111,0.15);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#2D9B6F">Mo</span>Motivation</span>
+          <span style="font-size:11px;color:var(--muted)" id="detail-entry-count">—</span>
+        </div>
+      </div>
+      <div id="detail-history"></div>
+    </div>
   </div>
 </div>
 
@@ -732,9 +920,7 @@ function subscribeCoach() {
     entriesCache  = {};
     await preloadAll();
     renderCoachStats();
-    renderCoach();
-    renderAlerts();
-    renderManage();
+    renderOverviewQuick();
   });
 }
 
@@ -1068,9 +1254,9 @@ function renderCoachStats() {
     overviewChart = new Chart(canvas.getContext('2d'), {
       type:'line',
       data:{ labels:days.map(d=>d.slice(5)), datasets:[
-        {label:'Clarity',    data:dCl, borderColor:'#5F3685', backgroundColor:'rgba(95,54,133,0.10)', tension:0.35, fill:true,  pointRadius:4, borderWidth:2.5, spanGaps:true},
-        {label:'Confidence', data:dCo, borderColor:'#E8B84B', backgroundColor:'rgba(232,184,75,0.08)', tension:0.35, fill:false, pointRadius:4, borderWidth:2.5, spanGaps:true},
-        {label:'Motivation', data:dMo, borderColor:'#2D9B6F', backgroundColor:'rgba(45,155,111,0.08)', tension:0.35, fill:false, pointRadius:4, borderWidth:2.5, spanGaps:true}
+        {label:'Clarity',    data:dCl, borderColor:'#5F3685', backgroundColor:'rgba(95,54,133,0.10)', tension:0.35, fill:true,  pointRadius:4, borderWidth:2.5, spanGaps:false},
+        {label:'Confidence', data:dCo, borderColor:'#E8B84B', backgroundColor:'rgba(232,184,75,0.08)', tension:0.35, fill:false, pointRadius:4, borderWidth:2.5, spanGaps:false},
+        {label:'Motivation', data:dMo, borderColor:'#2D9B6F', backgroundColor:'rgba(45,155,111,0.08)', tension:0.35, fill:false, pointRadius:4, borderWidth:2.5, spanGaps:false}
       ]},
       options:{ plugins:{legend:{labels:{font:{size:11,family:'Plus Jakarta Sans'},boxWidth:12,padding:10}}}, scales:{y:{min:0,max:10,ticks:{stepSize:2,font:{size:10}},grid:{color:'rgba(95,54,133,0.07)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}, responsive:true, maintainAspectRatio:true, animation:{duration:400} }
     });
@@ -1097,7 +1283,7 @@ function renderCoach() {
     const latest  = entries.length ? entries[0] : null;
     const days    = latest ? daysAgo(latest.date) : 999;
     const isAlert = days >= 4 || (latest && Math.min(latest.clarity, latest.confidence, latest.motivation) < 5);
-    return `<div class="ath-card ${isAlert?'alert-card':''}" onclick="this.classList.toggle('open')">
+    return `<div class="ath-card ${isAlert?'alert-card':''}" onclick="openAthDetail('${a.id}')">
       <div class="ath-row-main">
         <div class="ath-av">${initials(a.name)}</div>
         <div class="ath-info">
@@ -1105,10 +1291,10 @@ function renderCoach() {
           <div class="ath-sport">${a.sport} · ${latest?`Last logged: ${fmtDate(latest.date)}`:'No check-ins yet'}</div>
         </div>
         <div class="ath-scores">
-          ${latest?`<div class="sc ${scClass(latest.clarity)}" title="Clarity">${latest.clarity}</div><div class="sc ${scClass(latest.confidence)}" title="Confidence">${latest.confidence}</div>`:`<div class="sc sc-none">–</div>`}
+          ${latest?`<div class="sc ${scClass(latest.clarity)}" title="Clarity">${latest.clarity}</div><div class="sc ${scClass(latest.confidence)}" title="Confidence">${latest.confidence}</div><div class="sc ${scClass(latest.motivation)}" title="Motivation">${latest.motivation}</div>`:`<div class="sc sc-none">–</div>`}
+          <span style="font-size:18px;color:var(--muted);margin-left:4px">›</span>
         </div>
       </div>
-      <div class="ath-detail">${renderAthDetail(a)}</div>
     </div>`;
   }).join('');
 }
@@ -1163,6 +1349,77 @@ function getAlerts() {
   }, []);
 }
 
+// ── OVERVIEW QUICK GLANCE ─────────────────────────────────────────────
+function renderOverviewQuick() {
+  const athletes = getAthletes();
+  const today = new Date().toISOString().slice(0,10);
+  const el = document.getElementById('overview-quick-list');
+  if (!athletes.length) { el.innerHTML = '<div class="empty-state">No athletes registered yet.</div>'; return; }
+  // Just show a compact row for each athlete — logged today vs not
+  const logged   = athletes.filter(a => getEntries(a.id).some(e => e.date === today));
+  const notToday = athletes.filter(a => !getEntries(a.id).some(e => e.date === today));
+  let html = '';
+  if (logged.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">✓ Logged today (${logged.length})</div>`;
+    html += logged.map(a => {
+      const e = getEntries(a.id)[0];
+      return `<div class="ath-card" onclick="openAthDetail('${a.id}')">
+        <div class="ath-row-main">
+          <div class="ath-av">${initials(a.name)}</div>
+          <div class="ath-info"><div class="ath-name">${a.name}</div><div class="ath-sport">${a.sport}</div></div>
+          <div class="ath-scores">
+            ${e?`<div class="sc ${scClass(e.clarity)}">${e.clarity||'–'}</div><div class="sc ${scClass(e.confidence)}">${e.confidence||'–'}</div><div class="sc ${scClass(e.motivation)}">${e.motivation||'–'}</div>`:''}
+            <span style="font-size:13px;color:var(--muted)">›</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  if (notToday.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin:${logged.length?'16px':0} 0 8px">Not logged today (${notToday.length})</div>`;
+    html += notToday.map(a => {
+      const entries = getEntries(a.id);
+      const last = entries[0];
+      return `<div class="ath-card" onclick="openAthDetail('${a.id}')">
+        <div class="ath-row-main">
+          <div class="ath-av">${initials(a.name)}</div>
+          <div class="ath-info"><div class="ath-name">${a.name}</div><div class="ath-sport">${a.sport} · ${last?'Last: '+fmtDate(last.date):'No logs yet'}</div></div>
+          <div class="ath-scores"><span style="font-size:13px;color:var(--muted)">›</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML = html;
+}
+
+// ── LOGGED TODAY (alerts tab) ─────────────────────────────────────────
+function renderLoggedToday() {
+  const athletes = getAthletes();
+  const today = new Date().toISOString().slice(0,10);
+  const logged = athletes.filter(a => getEntries(a.id).some(e => e.date === today));
+  document.getElementById('logged-today-count').textContent = logged.length;
+  const el = document.getElementById('logged-today-list');
+  if (!logged.length) {
+    el.innerHTML = '<div class="empty-state">No one has logged today yet.</div>';
+    return;
+  }
+  el.innerHTML = logged.map(a => {
+    const e = getEntries(a.id).find(e => e.date === today);
+    return `<div class="logged-item">
+      <div class="logged-dot"></div>
+      <div class="a-info" style="flex:1">
+        <div class="a-name">${a.name}</div>
+        <div class="a-reason">${a.sport}</div>
+      </div>
+      ${e?`<div style="display:flex;gap:5px">
+        <div class="sc ${scClass(e.clarity)}">${e.clarity||'–'}</div>
+        <div class="sc ${scClass(e.confidence)}">${e.confidence||'–'}</div>
+        <div class="sc ${scClass(e.motivation)}">${e.motivation||'–'}</div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
 function renderAlerts() {
   const alerts = getAlerts();
   document.getElementById('alert-count').textContent = alerts.length;
@@ -1180,15 +1437,52 @@ function renderManage() {
   const el = document.getElementById('ath-list-ui');
   if (!athletes.length) { el.innerHTML = '<div class="empty-state" style="padding:10px">No athletes added yet.</div>'; return; }
   el.innerHTML = athletes.map(a => `
-    <div class="ath-manage-row">
-      <div class="ath-av" style="width:34px;height:34px;font-size:12px">${initials(a.name)}</div>
-      <div class="ath-manage-info">
+    <div class="ath-manage-row" id="mr-${a.id}">
+      <div class="ath-av" style="width:34px;height:34px;font-size:12px;flex-shrink:0">${initials(a.name)}</div>
+      <div class="ath-manage-info" id="mr-info-${a.id}">
         <div class="ath-manage-name">${a.name} <span style="font-size:11px;color:var(--muted);font-weight:400">· ${a.sport}</span></div>
         <div class="ath-manage-code">Code: ${a.code}</div>
       </div>
-      <button class="btn-del" onclick="removeAthlete('${a.id}',event)">Remove</button>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button class="btn-edit" id="btn-edit-${a.id}" onclick="editAthlete('${a.id}')">Edit</button>
+        <button class="btn-del"  onclick="removeAthlete('${a.id}',event)">Remove</button>
+      </div>
     </div>`).join('');
 }
+
+window.editAthlete = function(id) {
+  const a = getAthletes().find(x => x.id === id);
+  if (!a) return;
+  const info = document.getElementById('mr-info-'+id);
+  const editBtn = document.getElementById('btn-edit-'+id);
+  info.innerHTML = `
+    <div class="edit-inline">
+      <input id="ei-name-${id}"  value="${a.name}"  placeholder="Name">
+      <input id="ei-sport-${id}" value="${a.sport}" placeholder="Sport">
+      <input id="ei-code-${id}"  value="${a.code}"  placeholder="Code">
+    </div>`;
+  editBtn.textContent = 'Save';
+  editBtn.className = 'btn-save';
+  editBtn.onclick = () => saveEditAthlete(id);
+};
+
+window.saveEditAthlete = async function(id) {
+  const name  = document.getElementById('ei-name-'+id).value.trim();
+  const sport = document.getElementById('ei-sport-'+id).value.trim();
+  const code  = document.getElementById('ei-code-'+id).value.trim();
+  if (!name) { alert("Name can't be empty."); return; }
+  const editBtn = document.getElementById('btn-edit-'+id);
+  editBtn.textContent = 'Saving…'; editBtn.disabled = true;
+  try {
+    await db.collection('athletes').doc(id).update({ name, sport: sport||'Sport', code: code||DEFAULT_CODE });
+    const idx = athletesCache.findIndex(a => a.id === id);
+    if (idx !== -1) athletesCache[idx] = { ...athletesCache[idx], name, sport: sport||'Sport', code: code||DEFAULT_CODE };
+    renderManage(); renderCoach(); renderCoachStats();
+  } catch(e) {
+    alert('Failed to save — please try again.');
+    editBtn.textContent = 'Save'; editBtn.disabled = false;
+  }
+};
 
 window.addAthlete = async function() {
   const name  = document.getElementById('new-name').value.trim();
@@ -1242,10 +1536,199 @@ window.showCTab = function(tab, btn) {
   document.querySelectorAll('#s-coach .bnav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('ct-'+tab).classList.add('active');
   btn.classList.add('active');
-  if (tab === 'overview') { renderCoachStats(); renderCoach(); }
-  if (tab === 'alerts')   renderAlerts();
-  if (tab === 'manage')   renderManage();
+  if (tab === 'overview') { renderCoachStats(); renderOverviewQuick(); }
+  if (tab === 'alerts')   { renderLoggedToday(); renderAlerts(); renderCoach(); }
+  if (tab === 'manage')   { renderManage(); }
 };
+
+// ── ATHLETE DETAIL SCREEN (coach only) ────────────────────────────────
+let detailAthleteId  = null;
+let detailRange      = 7;
+let detailChart      = null;
+
+window.openAthDetail = function(athleteId) {
+  detailAthleteId = athleteId;
+  detailRange = 7;
+  document.getElementById('s-coach').classList.remove('active');
+  document.getElementById('s-ath-detail').classList.add('active');
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('rbtn-7').classList.add('active');
+  renderDetailScreen();
+};
+
+window.closeAthDetail = function() {
+  document.getElementById('s-ath-detail').classList.remove('active');
+  document.getElementById('s-coach').classList.add('active');
+  if (detailChart) { detailChart.destroy(); detailChart = null; }
+};
+
+window.setDetailRange = function(range, btn) {
+  detailRange = range;
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDetailChart();
+};
+
+function renderDetailScreen() {
+  const a = athletesCache.find(x => x.id === detailAthleteId);
+  if (!a) return;
+  const entries = getEntries(a.id);
+  document.getElementById('detail-ath-name').textContent  = a.name;
+  document.getElementById('detail-ath-sport').textContent = a.sport;
+  renderDetailStats(a, entries);
+  renderDetailChart();
+  renderDetailPatterns(entries);
+  renderDetailHistory(entries);
+}
+
+function renderDetailStats(a, entries) {
+  if (!entries.length) {
+    document.getElementById('detail-stats').innerHTML = '<div style="font-size:13px;color:var(--muted);padding:10px 0">No check-ins yet.</div>';
+    return;
+  }
+  const streak   = calcStreak(entries);
+  const l7       = entries.slice(0, 7);
+  const avgCl    = avg(entries.map(e => e.clarity));
+  const avgCo    = avg(entries.map(e => e.confidence));
+  const avgMo    = avg(entries.map(e => e.motivation));
+  const trainDays = entries.filter(e => e.trained && e.trained !== 'rest').length;
+  document.getElementById('detail-stats').innerHTML = `
+    <div class="detail-stat"><div class="detail-stat-lbl">Streak</div><div class="detail-stat-val gold">${streak}</div></div>
+    <div class="detail-stat"><div class="detail-stat-lbl">Total logs</div><div class="detail-stat-val">${entries.length}</div></div>
+    <div class="detail-stat"><div class="detail-stat-lbl">Avg Clarity</div><div class="detail-stat-val">${avgCl||'–'}</div></div>
+    <div class="detail-stat"><div class="detail-stat-lbl">Avg Confidence</div><div class="detail-stat-val">${avgCo||'–'}</div></div>
+    <div class="detail-stat"><div class="detail-stat-lbl">Avg Motivation</div><div class="detail-stat-val">${avgMo||'–'}</div></div>
+    <div class="detail-stat"><div class="detail-stat-lbl">Training days</div><div class="detail-stat-val green">${trainDays}</div></div>
+  `;
+}
+
+function renderDetailChart() {
+  const entries = getEntries(detailAthleteId);
+  if (!entries.length) return;
+  const pts = detailRange === 0
+    ? [...entries].reverse()
+    : [...entries].slice(0, detailRange).reverse();
+  if (detailChart) { detailChart.destroy(); detailChart = null; }
+  const canvas = document.getElementById('detail-chart');
+  if (!canvas) return;
+  detailChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: pts.map(e => e.date.slice(5)),
+      datasets: [
+        { label:'Clarity',    data:pts.map(e=>e.clarity||null),    borderColor:'#5F3685', backgroundColor:'rgba(95,54,133,0.10)', tension:0.4, pointRadius:4, borderWidth:2.5, fill:true,  spanGaps:false },
+        { label:'Confidence', data:pts.map(e=>e.confidence||null), borderColor:'#E8B84B', backgroundColor:'rgba(232,184,75,0.07)', tension:0.4, pointRadius:4, borderWidth:2.5, fill:false, spanGaps:false },
+        { label:'Motivation', data:pts.map(e=>e.motivation||null), borderColor:'#2D9B6F', backgroundColor:'rgba(45,155,111,0.07)', tension:0.4, pointRadius:4, borderWidth:2.5, fill:false, spanGaps:false }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      scales: {
+        y:{ min:0, max:10, ticks:{stepSize:2, font:{size:10}, color:'#6B6880'}, grid:{color:'rgba(0,0,0,0.04)'} },
+        x:{ ticks:{font:{size:10}, color:'#6B6880'}, grid:{display:false} }
+      },
+      plugins:{ legend:{ labels:{ font:{size:11, family:'Plus Jakarta Sans'}, usePointStyle:true, pointStyleWidth:8, padding:16, color:'#1E1A2E' } } },
+      animation:{ duration:400 }
+    }
+  });
+}
+
+function renderDetailPatterns(entries) {
+  const wrap = document.getElementById('detail-patterns-wrap');
+  const el   = document.getElementById('detail-patterns');
+  if (entries.length < 5) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  const ALL_TOOLS = ['Visualisation','Breathwork','Self-talk','Thought reframing','Focus training','Flow state','Anchor','Journaling','Meditation'];
+  const baseline = { cl:[], co:[], mo:[] };
+  entries.forEach(e => {
+    const tools = e.mentalTools || [];
+    const hasTools = tools.filter(t => t !== 'None today').length > 0;
+    if (!hasTools) { baseline.cl.push(e.clarity); baseline.co.push(e.confidence); baseline.mo.push(e.motivation); }
+  });
+  const bCo = avg(baseline.co) || 0;
+  const bCl = avg(baseline.cl) || 0;
+  const bMo = avg(baseline.mo) || 0;
+
+  const rows = ALL_TOOLS.map(tool => {
+    const days = entries.filter(e => (e.mentalTools||[]).includes(tool));
+    if (!days.length) return null;
+    return {
+      tool,
+      count: days.length,
+      co: avg(days.map(e => e.confidence)) || 0,
+      cl: avg(days.map(e => e.clarity))    || 0,
+      mo: avg(days.map(e => e.motivation)) || 0
+    };
+  }).filter(Boolean).sort((a,b) => b.co - a.co);
+
+  if (!rows.length) { wrap.style.display = 'none'; return; }
+
+  const maxVal = 10;
+  function bar(val, color) {
+    const pct = Math.round((val / maxVal) * 100);
+    return `<div class="pattern-bar-wrap">
+      <div class="pattern-score">${val.toFixed(1)}</div>
+      <div class="pattern-bar-bg"><div class="pattern-bar-fill" style="height:${pct}%;background:${color}"></div></div>
+      <div class="pattern-bar-lbl">${color==='#5F3685'?'Cl':color==='#E8B84B'?'Co':'Mo'}</div>
+    </div>`;
+  }
+
+  let html = '';
+  if (bCo > 0) {
+    html += `<div class="pattern-row" style="background:var(--bg3);border-radius:8px;padding:8px 10px;margin-bottom:8px">
+      <div class="pattern-tool" style="color:var(--muted);font-style:italic">No tools (baseline)</div>
+      <div class="pattern-days" style="color:var(--muted)">${baseline.co.length}d</div>
+      <div class="pattern-bars">${bar(bCl,'#5F3685')}${bar(bCo,'#E8B84B')}${bar(bMo,'#2D9B6F')}</div>
+    </div>`;
+  }
+
+  html += rows.map(r => `
+    <div class="pattern-row">
+      <div class="pattern-tool">${r.tool}</div>
+      <div class="pattern-days">${r.count}d</div>
+      <div class="pattern-bars">${bar(r.cl,'#5F3685')}${bar(r.co,'#E8B84B')}${bar(r.mo,'#2D9B6F')}</div>
+    </div>`).join('');
+
+  el.innerHTML = html + `<p style="font-size:10px;color:var(--muted);margin-top:10px;line-height:1.6">Cl = Clarity · Co = Confidence · Mo = Motivation. Bar height = average score out of 10.</p>`;
+}
+
+function renderDetailHistory(entries) {
+  const el = document.getElementById('detail-history');
+  document.getElementById('detail-entry-count').textContent = `${entries.length} entries`;
+  if (!entries.length) { el.innerHTML = '<div class="empty-state">No check-ins yet.</div>'; return; }
+  el.innerHTML = entries.map((e, i) => `
+    <div class="full-entry" id="fe-${i}">
+      <div class="full-entry-header" onclick="document.getElementById('fe-${i}').classList.toggle('open')">
+        <span class="full-entry-date">${fmtDate(e.date)}</span>
+        <div class="full-entry-scores">
+          <div class="sc ${scClass(e.clarity)}" title="Clarity">${e.clarity||'–'}</div>
+          <div class="sc ${scClass(e.confidence)}" title="Confidence">${e.confidence||'–'}</div>
+          <div class="sc ${scClass(e.motivation)}" title="Motivation">${e.motivation||'–'}</div>
+          <span style="font-size:16px;color:var(--muted);margin-left:2px">▾</span>
+        </div>
+      </div>
+      <div class="full-entry-body">
+        <div class="full-entry-grid">
+          <div class="feg-block"><div class="feg-lbl">Clarity</div><div class="feg-val">${e.clarity||'–'}/10</div></div>
+          <div class="feg-block"><div class="feg-lbl">Confidence</div><div class="feg-val">${e.confidence||'–'}/10</div></div>
+          <div class="feg-block"><div class="feg-lbl">Motivation</div><div class="feg-val">${e.motivation||'–'}/10</div></div>
+          <div class="feg-block"><div class="feg-lbl">Energy</div><div class="feg-val">${e.energyLevel||'–'}/10</div></div>
+          <div class="feg-block"><div class="feg-lbl">Sleep</div><div class="feg-val">${e.sleepHours||'–'} · ${e.sleepQuality||'–'}/10</div></div>
+          <div class="feg-block"><div class="feg-lbl">Soreness</div><div class="feg-val">${e.soreness||'–'}</div></div>
+          <div class="feg-block"><div class="feg-lbl">Training</div><div class="feg-val">${e.trained==='rest'?'Rest day':e.trained==='comp'?'Competition':e.trained?'Yes':'–'}</div></div>
+          ${e.trained && e.trained !== 'rest' ? `<div class="feg-block"><div class="feg-lbl">Intensity</div><div class="feg-val">${e.intensity||'–'}/10</div></div>` : ''}
+          ${e.trained && e.trained !== 'rest' ? `<div class="feg-block"><div class="feg-lbl">Body feel</div><div class="feg-val">${e.bodyFeel||'–'}/10</div></div>` : ''}
+          ${e.mentalDuration ? `<div class="feg-block"><div class="feg-lbl">Brain training</div><div class="feg-val">${e.mentalDuration}</div></div>` : ''}
+        </div>
+        ${e.trainingTypes&&e.trainingTypes.length?`<div class="feg-lbl" style="margin:4px 0 6px">Training type</div><div class="full-entry-tools">${e.trainingTypes.map(t=>`<span class="chip-sm">${t}</span>`).join('')}</div>`:''}
+        ${e.mentalTools&&e.mentalTools.length?`<div class="feg-lbl" style="margin:8px 0 6px">Mental tools used</div><div class="full-entry-tools">${e.mentalTools.map(t=>`<span class="chip-sm">${t}</span>`).join('')}</div>`:''}
+        ${e.biggestWin?`<div class="full-entry-note"><b>Biggest win</b>${e.biggestWin}</div>`:''}
+        ${e.mainChallenge?`<div class="full-entry-note"><b>Main challenge</b>${e.mainChallenge}</div>`:''}
+        ${e.noteForCoach?`<div class="full-entry-note" style="border-left:3px solid var(--purple)"><b>Note for coach</b>${e.noteForCoach}</div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
 </script>
 </body>
 </html>
